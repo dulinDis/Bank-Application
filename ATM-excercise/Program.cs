@@ -4,32 +4,54 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 
+//Stack<Func<>> userAcions = new Stack<Func<>>;
 
 Bank myBank = new Bank();
 long accountNum = 0;
 
-//Stack<Func<>> userAcions = new Stack<Func<>>;
-//myBank.createAccount("Trolo", "lololo", currencyOptions.USD, 10);
-long mattAccNum = myBank.createAccount("Mathias", "Okulska", currencyOptions.PLN,100);
-long pauAccNum = myBank.createAccount("Paulina", "Okulska", currencyOptions.PLN, 100);
-//long mattAccNum = myBank.createAccount("Matthias", "Flexk", currencyOptions.EUR, 30);
-myBank.loginUser(mattAccNum);
-accountNum = mattAccNum;
+long acc1 = myBank.createAccount("Mathias", "Schuler", currencyOptions.PLN, 100);
+long acc2 = myBank.createAccount("Paulina", "Okulska", currencyOptions.PLN, 100);
 
-//myBank.loggedUserActions(1, accountActions.WithdrawATM);
-//myBank.loggedUserActions(1, accountActions.TransactionHistory);
+//myBank.loginUser(acc1);
+//accountNum = acc1;
 
 
+//  Console.Clear();
 
-//userWelcomeScreen();
 
+/*if (accountNum > 0)
+{
+    loggedUserChoiceScreen(accountNum);
+}*/
+
+
+bool restart=true;
+
+
+userWelcomeScreen();
 if (accountNum > 0)
 {
     loggedUserChoiceScreen(accountNum);
-    
 }
-//Console.WriteLine("Would you like to perform anoher operation?");
-//userWelcomeScreen();
+
+do
+{
+
+    userWelcomeScreen();
+
+    if (accountNum > 0)
+    {
+        loggedUserChoiceScreen(accountNum);
+    }
+
+} while (restart == true);
+
+
+
+
+
+
+
 
 
 
@@ -55,10 +77,10 @@ currencyOptions readCurrencyOption()
             return currencyOptions.USD;
             break;
         case "2":
-            return currencyOptions.PLN;
+            return currencyOptions.EUR;
             break;
         case "3":
-            return currencyOptions.EUR;
+            return currencyOptions.PLN;
             break;
         default: return currencyOptions.USD;
 
@@ -83,19 +105,31 @@ void userWelcomeScreen()
                 accountNum = createNewUser(myBank);
                 break;
             case 2:
-                Console.WriteLine("Provide account number:");
-                long accountNo = readLong("bank account");
-                bool isLogin = myBank.loginUser(accountNo);
+
+           bool isLogin = loginUser();
                 if (isLogin)
                 {
-                    accountNum = accountNo;
+                   
                     return;
                 }
                 else
                 {
                     break;
-                }
+                } 
+          /*  Console.WriteLine("Provide account number:");
+             long accountNo = readLong("bank account");
+             bool isLogin = myBank.loginUser(accountNo);
+             if (isLogin)
+             {
+                 accountNum = accountNo;
+                 return;
+             }
+             else
+             {
+                 break;
+             }*/
             case 3:
+                restart = false;
                 return;
             default:
                 Console.WriteLine("Error");
@@ -147,13 +181,15 @@ void loggedUserChoiceScreen(long accountNumber)
             case 5:
                 action = accountActions.SendMoney;
                 myBank.loggedUserActions(accountNumber, action);
-                return;
+                break;
             case 6:
                 Console.Clear();
                 myBank.logoutUser(accountNumber);
+                accountNum = 0;
                 Console.WriteLine("User successfully logged out.");
+                
                 //bool restar
-                userWelcomeScreen();
+                // userWelcomeScreen();
                 return;
             default:
                 Console.WriteLine("Error");
@@ -164,76 +200,95 @@ void loggedUserChoiceScreen(long accountNumber)
 
 
 }
+
+//void seedInitialCustomers(){}
+
+
 long createNewUser(Bank myBank)
 {
-    string firstName = readString("first name");
-    string lastName = readString("surname");
-    decimal balance = readDecimal("inital deposit");
+    string firstName = readString("First name:");
+    string lastName = readString("Surname:");
+    decimal balance = readDecimal("Inital deposit (optional):");
     currencyOptions currency = readCurrencyOption();
-
     long newAcc = myBank.createAccount(firstName, lastName, currency, balance);
-    myBank.reportAccountDetails(1);
-
+    myBank.reportAccountDetails(newAcc);
     return newAcc;
 };
 
-decimal readDecimal(string inputDescription)
+bool loginUser()
 {
-    decimal input = 0;
-    bool okay = false;
+    Console.WriteLine("Provide account number:");
+    long accountNo = readLong("bank account");
+    bool isLogin = myBank.loginUser(accountNo);
+    if (isLogin)
+    {
+        accountNum = accountNo;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+
+
+//data type check
+ decimal readDecimal(string inputDescription)
+{
+    decimal userInput = 0;
+    bool isCorrect = false;
     do
     {
         Console.WriteLine("Please enter your " + inputDescription + " (decimal)");
         try
         {
-            input = decimal.Parse(Console.ReadLine());
-            okay = true;
+            userInput = decimal.Parse(Console.ReadLine());
+            isCorrect = true;
         }
         catch (Exception)
         {
             Console.WriteLine("stupid rock, please try thinking before you write");
         }
-    } while (okay == false);
-    return input;
+    } while (isCorrect == false);
+    return userInput;
 }
-
-
-long readLong(string inputDescription)
+ long readLong(string inputDescription)
 {
     long input = 0;
-    bool okay = false;
+    bool isCorrect = false;
     do
     {
         Console.WriteLine("Please enter your " + inputDescription + " (long)");
         try
         {
             input = long.Parse(Console.ReadLine());
-            okay = true;
+            isCorrect = true;
         }
         catch (Exception)
         {
             Console.WriteLine("stupid rock, please try thinking before you write");
         }
-    } while (okay == false);
+    } while (isCorrect == false);
     return input;
 }
-
-string readString(string inputDescription)
+ string readString(string inputDescription)
 {
-    string input = "";
-    bool okay = false;
+    string userInput = "";
+    bool isCorrect = false;
     do
     {
         Console.WriteLine("Please enter your " + inputDescription + " (text)");
-        input = Console.ReadLine();
-        if (input == null || String.IsNullOrEmpty(input.Trim()))
+        userInput = Console.ReadLine();
+        if (userInput == null || String.IsNullOrEmpty(userInput.Trim()))
         {
             Console.WriteLine("stupid rock, please try hitting your keyboard before you press enter");
         }
         else
         {
-            okay = true;
+            isCorrect = true;
         }
-    } while (!okay);
-    return input;
+    } while (!isCorrect);
+    return userInput;
 }
+

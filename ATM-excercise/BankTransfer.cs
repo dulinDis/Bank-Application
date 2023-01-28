@@ -56,8 +56,8 @@ namespace ATM_excercise
         {
             if (TransferType == transferType.outgoing)
             {
-                Console.WriteLine($"You sent on {CreatedAt}  {Amount} {Currency} to {RecipientAccount}");
-                Console.WriteLine($"New bank transfer with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {type}. Tranfer type {TransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
+                Console.WriteLine($"You sent on {CreatedAt}  {Amount * (-1)}  {Currency} to {RecipientAccount}");
+                Console.WriteLine($"New bank transfer with transaction ID {TransactionID} created on {CreatedAt} for value {Amount *(-1)} {Currency}. Transaction type: {type}. Tranfer type {TransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
 
             }
             else {

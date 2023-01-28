@@ -12,19 +12,12 @@ namespace ATM_excercise
 {
     public enum currencyOptions { USD, EUR, PLN };// make these accessible everywhere and ake subaccoutn dependng on currency
     public enum accountActions { CheckBalance, TransactionHistory, WithdrawATM, DepositATM, SendMoney };
-
-   // public enum ATMactions { W}
-    //public enum BankransferTransactions {  }
-
-
     public enum bankingOperationTypes { ATMTransaction, BankTransfer, BankDeposit };
 
      internal class Bank
     {
         //readonly
         Dictionary<long, Account> accounts = new Dictionary<long, Account>();
-
-
 
         // account creation 
         public long createAccount(string name, string surname, currencyOptions currency)
@@ -37,8 +30,6 @@ namespace ATM_excercise
             long accountNum = getNextAccountNumber();
             Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
             accounts.Add(newAccount.AccountNumber, newAccount);
-            // reportAccountDetails(accountNum);
-
             if (initialBalance > 0)
             {
                 BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
@@ -125,7 +116,7 @@ namespace ATM_excercise
         {
            // Console.WriteLine("accoun actions called with action: "+ action);
             Account userAccount= findAccount(accountNum);
-           // Account recepientAccount = findAccount();
+           
             switch(action)
             {
                 case accountActions.CheckBalance:
@@ -142,7 +133,18 @@ namespace ATM_excercise
                     userAccount.depositToATM(accountNum);
                     break;
                 case accountActions.SendMoney:
-                    userAccount.sendBetweenAccounts(accountNum);
+                    long recipientAccountNumber;
+                    Console.WriteLine("What is the recipient you would like to send to? Provide accoun number (long)");
+                    long.TryParse(Console.ReadLine(), out recipientAccountNumber);
+                    Account recepientAccount = findAccount(recipientAccountNumber);
+                    userAccount.sendBetweenAccounts(accountNum, recepientAccount);
+
+
+                   // userAccount.retrieveTTransactionHistory();
+                   // userAccount.rerieveBalance();
+                   // recepientAccount.retrieveTTransactionHistory();
+                   // recepientAccount.rerieveBalance();
+
                     break;
                 default:
                     Console.WriteLine("Error");
@@ -160,25 +162,7 @@ namespace ATM_excercise
             Console.WriteLine("What operat");
 
           //  findAccount(accountNum).performTransaction(recipientAccount);
-        }
-
-        //  private void withdrawFromAccount(int accountNum,  bankingOperationTypes transactionType) { 
-        //  }
-
-        
-       
-
-
-        /*
-                  Func<string, int> parseint = Int32.Parse;
-                  
-                  private void test()
-                  
-                  
-                  {
-            int three = parseint.Invoke("3");
-        }
-        */
+        }   
 
     }
 }

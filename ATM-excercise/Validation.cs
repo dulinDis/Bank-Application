@@ -17,6 +17,27 @@ namespace ATM_excercise
             else return true;
         }
 
+
+        //check if sring contains only characters 
+        public static bool checkIfAllCharacters()
+        {
+            string userInput="";
+            bool isCorrect;
+
+            if (userInput == null || String.IsNullOrEmpty(userInput.Trim()) || userInput.All(Char.IsLetter) != true)
+            {
+                Console.WriteLine("value incorrect");
+                isCorrect = false;
+               
+            } else
+            {
+                isCorrect=true;
+            }
+            return isCorrect;
+        }
+
+
+
         //method to check if already exist in the database
     }
 }
