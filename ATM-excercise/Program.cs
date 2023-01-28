@@ -4,55 +4,43 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 
-//Stack<Func<>> userAcions = new Stack<Func<>>;
+
 
 Bank myBank = new Bank();
 long accountNum = 0;
+bool restart = true;
 
 long acc1 = myBank.createAccount("Mathias", "Schuler", currencyOptions.PLN, 100);
 long acc2 = myBank.createAccount("Paulina", "Okulska", currencyOptions.PLN, 100);
 
-//myBank.loginUser(acc1);
-//accountNum = acc1;
-
-
-//  Console.Clear();
-
-
-/*if (accountNum > 0)
+/*userWelcomeScreen();
+if (accountNum > 0)
 {
     loggedUserChoiceScreen(accountNum);
 }*/
 
+while (restart == true)
+    
+    {
+        userWelcomeScreen();
+        if (accountNum > 0)
+        {
+            loggedUserChoiceScreen(accountNum);
+        }
+    } 
 
-bool restart=true;
 
 
-userWelcomeScreen();
-if (accountNum > 0)
-{
-    loggedUserChoiceScreen(accountNum);
-}
 
-do
+/*do
 {
 
     userWelcomeScreen();
-
     if (accountNum > 0)
     {
         loggedUserChoiceScreen(accountNum);
     }
-
-} while (restart == true);
-
-
-
-
-
-
-
-
+} while (restart == true);*/
 
 
 
@@ -64,7 +52,6 @@ do
 
 currencyOptions readCurrencyOption()
 {
-
     Console.WriteLine("Please provide the account currency:");
     Console.WriteLine("1 - USD");
     Console.WriteLine("2 - EUR");
@@ -83,13 +70,13 @@ currencyOptions readCurrencyOption()
             return currencyOptions.PLN;
             break;
         default: return currencyOptions.USD;
-
     }
 }
 
-
+//programme-to-bank communication: instructions for user to trigger actions
 void userWelcomeScreen()
 {
+    //restart = true;
     int userChoice;
     do
     {
@@ -106,49 +93,35 @@ void userWelcomeScreen()
                 break;
             case 2:
 
-           bool isLogin = loginUser();
+                bool isLogin = loginUser();
                 if (isLogin)
                 {
-                   
+
                     return;
                 }
                 else
                 {
                     break;
-                } 
-          /*  Console.WriteLine("Provide account number:");
-             long accountNo = readLong("bank account");
-             bool isLogin = myBank.loginUser(accountNo);
-             if (isLogin)
-             {
-                 accountNum = accountNo;
-                 return;
-             }
-             else
-             {
-                 break;
-             }*/
+                }
             case 3:
                 restart = false;
+                //break;
                 return;
             default:
                 Console.WriteLine("Error");
                 break;
         }
     }
-    //while (userChoice != 1 && userChoice != 2);
-    while (true); //we exit via return upon receiving an acceptable input
-
+    while (userChoice!=3); 
 }
 
 void loggedUserChoiceScreen(long accountNumber)
 {
     int userChoice;
     accountActions action;
-
     do
     {
-      //  Console.Clear();
+        //  Console.Clear();
         Console.WriteLine("What would you like to do now?");
         Console.WriteLine("To check your balance press 1");
         Console.WriteLine("To check your transaction history press 2");
@@ -157,7 +130,6 @@ void loggedUserChoiceScreen(long accountNumber)
         Console.WriteLine("To transfer monney between accounts press 5");
         Console.WriteLine("To logout press 6");
         Int32.TryParse(Console.ReadLine(), out userChoice);
-
 
         switch (userChoice)
         {
@@ -175,7 +147,7 @@ void loggedUserChoiceScreen(long accountNumber)
                 myBank.loggedUserActions(accountNumber, action);
                 break;
             case 4:
-                action= accountActions.DepositATM;
+                action = accountActions.DepositATM;
                 myBank.loggedUserActions(accountNumber, action);
                 break;
             case 5:
@@ -187,23 +159,18 @@ void loggedUserChoiceScreen(long accountNumber)
                 myBank.logoutUser(accountNumber);
                 accountNum = 0;
                 Console.WriteLine("User successfully logged out.");
-                
+
                 //bool restar
                 // userWelcomeScreen();
                 return;
             default:
-                Console.WriteLine("Error");
-                break;         
+                Console.WriteLine("Error.");
+                break;
         }
-    } while (true && userChoice!=6);
-
-
-
+    } while (true && userChoice != 6);
 }
 
-//void seedInitialCustomers(){}
-
-
+//programme-to-bank communication: instructions for user account
 long createNewUser(Bank myBank)
 {
     string firstName = readString("First name:");
@@ -214,7 +181,6 @@ long createNewUser(Bank myBank)
     myBank.reportAccountDetails(newAcc);
     return newAcc;
 };
-
 bool loginUser()
 {
     Console.WriteLine("Provide account number:");
@@ -231,10 +197,8 @@ bool loginUser()
     }
 }
 
-
-
 //data type check
- decimal readDecimal(string inputDescription)
+decimal readDecimal(string inputDescription)
 {
     decimal userInput = 0;
     bool isCorrect = false;
@@ -253,7 +217,7 @@ bool loginUser()
     } while (isCorrect == false);
     return userInput;
 }
- long readLong(string inputDescription)
+long readLong(string inputDescription)
 {
     long input = 0;
     bool isCorrect = false;
@@ -272,7 +236,7 @@ bool loginUser()
     } while (isCorrect == false);
     return input;
 }
- string readString(string inputDescription)
+string readString(string inputDescription)
 {
     string userInput = "";
     bool isCorrect = false;

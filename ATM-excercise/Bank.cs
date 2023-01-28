@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise
 {
-    public enum currencyOptions { USD, EUR, PLN };// make these accessible everywhere and ake subaccoutn dependng on currency
+    public enum currencyOptions { USD, EUR, PLN };// the multiaccount option yet not implemented
     public enum accountActions { CheckBalance, TransactionHistory, WithdrawATM, DepositATM, SendMoney };
     public enum bankingOperationTypes { ATMTransaction, BankTransfer, BankDeposit };
 
@@ -47,7 +47,7 @@ namespace ATM_excercise
         // account activities
         public void reportAccountDetails(long accountNumber) // should be a method on account
         {
-            Account storedAccount = (Account)accounts[accountNumber];
+            Account storedAccount = findAccount(accountNumber);
             Console.WriteLine($"Account no: {storedAccount.AccountNumber}.");
             Console.WriteLine($"Customer: {storedAccount.UserName} {storedAccount.UserSurname}.");
             Console.WriteLine($"Account currency: {storedAccount.AccountCurrency}.");
