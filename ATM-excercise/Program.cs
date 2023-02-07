@@ -13,11 +13,6 @@ bool restart = true;
 long acc1 = myBank.createAccount("Mathias", "Schuler", currencyOptions.PLN, 100);
 long acc2 = myBank.createAccount("Paulina", "Okulska", currencyOptions.PLN, 100);
 
-/*userWelcomeScreen();
-if (accountNum > 0)
-{
-    loggedUserChoiceScreen(accountNum);
-}*/
 
 while (restart == true)
     
@@ -31,24 +26,6 @@ while (restart == true)
 
 
 
-
-/*do
-{
-
-    userWelcomeScreen();
-    if (accountNum > 0)
-    {
-        loggedUserChoiceScreen(accountNum);
-    }
-} while (restart == true);*/
-
-
-
-//for now we input all raw commands to bank here
-//we say for example "deposit 10€ on account 4"
-//and later on you can build an actual secure ATM that does that for you, verify your identity, keep a login session to an account
-//and at that point the user only interacts with the bank
-//for now we simulate that we are the ATM itself and we know that all actions (deposits withdrawals) are legit
 
 currencyOptions readCurrencyOption()
 {
@@ -212,7 +189,7 @@ decimal readDecimal(string inputDescription)
         }
         catch (Exception)
         {
-            Console.WriteLine("stupid rock, please try thinking before you write");
+            Console.WriteLine("Value is not a decimal.");
         }
     } while (isCorrect == false);
     return userInput;
@@ -231,7 +208,7 @@ long readLong(string inputDescription)
         }
         catch (Exception)
         {
-            Console.WriteLine("stupid rock, please try thinking before you write");
+            Console.WriteLine("Value is not a long.");
         }
     } while (isCorrect == false);
     return input;
@@ -246,7 +223,7 @@ string readString(string inputDescription)
         userInput = Console.ReadLine();
         if (userInput == null || String.IsNullOrEmpty(userInput.Trim()))
         {
-            Console.WriteLine("stupid rock, please try hitting your keyboard before you press enter");
+            Console.WriteLine("Value is not a string.");
         }
         else
         {
