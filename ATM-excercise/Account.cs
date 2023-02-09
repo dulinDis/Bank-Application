@@ -10,13 +10,13 @@ namespace ATM_excercise
 {
     internal class Account : ITransactionModel
     {
-        private string userName;
-        private string userSurname;
-        private decimal balance;
-        private long accountNumber;
-        private bool isLoggedIn= false;
-        private CurrencyOptions accountCurrency;
-        private List<Transaction> transactionHistory; 
+        private string _userName;
+        private string _userSurname;
+        private decimal _balance;
+        private long _accountNumber;
+        private bool _isLoggedIn= false;
+        private CurrencyOptions _accountCurrency;
+        private List<Transaction> _transactionHistory; 
 
         public string UserName { get; set; }
         public string UserSurname { get; set; }
@@ -40,7 +40,7 @@ namespace ATM_excercise
            // TransactionHistory = new List<ITransferable>();
         }
 
-        private bool isTransactionValid(decimal amount)
+        private bool CheckIfTransactionIsValid(decimal amount)
         {
             if (amount <= 0 || Balance < 0)
             {
@@ -56,7 +56,7 @@ namespace ATM_excercise
         {
             if (e.KeyCode == Keys.Escape) { }
         }*/
-       public void sendBetweenAccounts(long accountNumber, Account recipientAccount)
+       public void SendBetweenAccounts(long accountNumber, Account recipientAccount)
         {
             decimal amount;
             //long recipientAccount;
@@ -75,7 +75,7 @@ namespace ATM_excercise
                     Console.WriteLine("esc pressed"
                         ); break;
                 }
-                else if (!isTransactionValid(amount) || recipientAccount .AccountNumber<= 0)
+                else if (!CheckIfTransactionIsValid(amount) || recipientAccount .AccountNumber<= 0)
                 {
                     //conditional for account currency
                     Console.WriteLine("invalid operation.");
@@ -90,7 +90,7 @@ namespace ATM_excercise
                     BankTransfer transactionOutgoing = new BankTransfer(accountNumber, recipientAccount.AccountNumber, transferType.outgoing, amount*(-1),AccountCurrency);
                     Balance -= amount;      
                     TransactionHistory.Add(transactionOutgoing);
-                    transactionOutgoing.displayBankTransferDetails();
+                    transactionOutgoing.DisplayBankTransferDetails();
 
                     BankTransfer transacionIncoming = new BankTransfer(accountNumber, recipientAccount.AccountNumber, transferType.outgoing, amount, AccountCurrency);
                     //BankDeposit transacionIncoming = new BankTransfer(recipientAccount.AccountNumber, transferType.incoming, amount, AccountCurrency);
@@ -107,7 +107,7 @@ namespace ATM_excercise
 
 
         }
-        public void depositToATM(long accountNumer)
+        public void DepositToATM(long accountNumer)
         {
             decimal amount;
             bool endLoop = false;
@@ -117,7 +117,7 @@ namespace ATM_excercise
                 Console.WriteLine("how much would you like depositt? (decimal)? To escape press esc on your keyboard");
                 decimal.TryParse(Console.ReadLine(), out amount);
                
-                if (!isTransactionValid(amount))
+                if (!CheckIfTransactionIsValid(amount))
                 {
                     Console.WriteLine("invalid operation.");
                     Console.WriteLine($"Your tried to deposit negative number.");
@@ -128,17 +128,17 @@ namespace ATM_excercise
                 }
                 else
                 {
-                    ATMTransaction transaction = new ATMTransaction(amount, accountNumber, AccountCurrency);
+                    ATMTransaction transaction = new ATMTransaction(amount, _accountNumber, AccountCurrency);
                     // transaction.performBankTransaction(transaction);
                     //transaction.performBankTransaction(transaction);
                     Balance += amount;
                     TransactionHistory.Add(transaction);
-                    transaction.displayATMTransactionDetails();
+                    transaction.DisplayATMTransactionDetails();
                     endLoop = true;
                 }
             }
         }
-        public void withdrawFromATM(long accountNumber)
+        public void WithdrawFromATM(long accountNumber)
         {
             decimal amount;
             bool endLoop = false;
@@ -147,7 +147,7 @@ namespace ATM_excercise
             {
                 Console.WriteLine("how much would you like to withdraw? (decimal)? To escape press esc on your keyboard");
                 decimal.TryParse(Console.ReadLine(), out amount);
-                 if (!isTransactionValid(amount) || amount > Balance)
+                 if (!CheckIfTransactionIsValid(amount) || amount > Balance)
                 {
                     Console.WriteLine("invalid operation.");
                     Console.WriteLine($"Your  current balannce: {Balance} {AccountCurrency}. You tried to withdraw {amount} {AccountCurrency}");
@@ -158,7 +158,7 @@ namespace ATM_excercise
                     ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNumber, AccountCurrency);
                     Balance -= amount;
                     TransactionHistory.Add(transaction);
-                    transaction.displayATMTransactionDetails();
+                    transaction.DisplayATMTransactionDetails();
                     endLoop = true;
                 }
             }
@@ -170,9 +170,9 @@ namespace ATM_excercise
             TransactionHistory.Add(transaction);
         }*/
 
-        public void rerieveBalance()
+        public void RerieveBalance()
         {
-            Console.WriteLine($"Current balance for the account {AccountNumber}: {Balance} {accountCurrency}");
+            Console.WriteLine($"Current balance for the account {AccountNumber}: {Balance} {_accountCurrency}");
         }
 
         public void retrieveTTransactionHistory()
@@ -194,7 +194,7 @@ namespace ATM_excercise
             }
         }
 
-         public void performTransaction(Account recipientsAccount)
+         public void PerformTransaction(Account recipientsAccount)
         {
             if (this.AccountNumber == recipientsAccount.AccountNumber)
             {
@@ -205,45 +205,6 @@ namespace ATM_excercise
 
             }
         }
-
-        // public bool isUserLoggedIn
-
-        /*     public void PerformATMTransaction(double amount, ATMTransaction transaction)
-             {
-                 balance += amount;
-                 TransactionHistory.Add(transaction);
-             }
-
-             public void PerformBankTransfer(double amount, BankTransfer transaction)
-             {
-                 balance += amount;
-                 TransactionHistory.Add(transaction);
-             }
-
-             public void PerformBankDeposit(double amount, BankDeposit transaction)
-             {
-                 balance += amount;
-                 TransactionHistory.Add(transaction);
-             }*/
-
-
-        /*  public void Withdraw (double amount, Transaction transaction)
-          {
-              balance -= amount;
-              TransactionHistory.Add(transaction);
-          }
-          public void Deposit (double amount, Transaction transaction)
-          {
-              balance += amount;
-              TransactionHistory.Add(transaction);
-          }
-
-
-          public void Transfer(double amount, Transaction transaction)
-          {
-              balance -= amount;
-              TransactionHistory.Add(transaction);
-          }*/
 
     }
 }

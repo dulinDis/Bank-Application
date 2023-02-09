@@ -12,19 +12,19 @@ namespace ATM_excercise
     {
        // public enum currencyOptions { USD, EUR, PLN };
 
-        private long transactionID;
-        private decimal amount;
-        public DateTime createdAt;
-        private CurrencyOptions currency;
+        private long _transactionID;
+        private decimal _amount;
+        public DateTime _createdAt;
+        private CurrencyOptions _currency;
         public long TransactionID
         {
             get
             {
-                return transactionID;
+                return _transactionID;
             }
             set
             {
-                transactionID = value; //some random nummber assigns
+                _transactionID = value; //some random nummber assigns
             }
 
 
@@ -33,31 +33,31 @@ namespace ATM_excercise
         {
             get
             {
-                return amount;
+                return _amount;
             }
             set
             {
                
-                    amount = value;
+                    _amount = value;
                
             }
         }
         public CurrencyOptions Currency { get
             {
-                return currency;
+                return _currency;
             } set
             {
-                currency = value;
+                _currency = value;
             } 
         }
 
-        public DateTime CreatedAt { get { return createdAt; } set { createdAt = value; } }
+        public DateTime CreatedAt { get { return _createdAt; } set { _createdAt = value; } }
         public Transaction(decimal amount, CurrencyOptions currencyOption)
         {
             TransactionID = generateTransactionID();
             Amount = amount;
             CreatedAt = DateTime.Now;
-            Currency = currency;
+            Currency = _currency;
         }
 
         private long generateTransactionID()

@@ -39,14 +39,14 @@ namespace ATM_excercise
         Dictionary<long, Account> _accounts = new Dictionary<long, Account>();
 
         // account creation 
-        public long createAccount(string name, string surname, CurrencyOptions currency)
+        public long CreateAccount(string name, string surname, CurrencyOptions currency)
         {
             return CreateAccount(name, surname, currency, 0);
         }
 
         public long CreateAccount(string name, string surname, CurrencyOptions currency, decimal initialBalance)
         {
-            long accountNum = getNextAccountNumber();
+            long accountNum = GenerateNextAccountNumber();
             Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
             _accounts.Add(newAccount.AccountNumber, newAccount);
             if (initialBalance > 0)
@@ -57,7 +57,7 @@ namespace ATM_excercise
             return accountNum;
         }
 
-        private long getNextAccountNumber()
+        private long GenerateNextAccountNumber()
         {
             return _accounts.Count + 1;
         }
@@ -72,7 +72,7 @@ namespace ATM_excercise
             Console.WriteLine($"Account currency: {storedAccount.AccountCurrency}.");
             Console.WriteLine($"Initial balance deposited upon account creation: {storedAccount.Balance}  {storedAccount.AccountCurrency}.");
         }
-        public bool doesAccountExist(long accountNum)
+        public bool CheckIfAccounExists(long accountNum)
         {
             return _accounts.ContainsKey(accountNum) ? true : false;
         }
@@ -84,7 +84,7 @@ namespace ATM_excercise
         //user login and logout mehods
         public bool LogUserIn(long accountNum)
         {
-            if (!doesAccountExist(accountNum))
+            if (!CheckIfAccounExists(accountNum))
             {
                 Console.WriteLine("The login attempt failed.  The user with this account number does not exist.");
                 return false;
@@ -102,7 +102,7 @@ namespace ATM_excercise
         public bool LogUserOut(long accountNum)
         {
 
-            if (!doesAccountExist(accountNum))
+            if (!CheckIfAccounExists(accountNum))
             {
                 Console.WriteLine("cant log out user, the user with this accoun number doesnt exist");
                 return false;
@@ -117,7 +117,7 @@ namespace ATM_excercise
 
 
         }
-        public bool isUserLoggedIn(long accountNum)
+        public bool CheckIsUserLoggedIn(long accountNum)
         {
 
             if (_accounts.ContainsKey(accountNum))
@@ -139,24 +139,24 @@ namespace ATM_excercise
             switch (action)
             {
                 case AccountActions.CheckBalance:
-                    userAccount.rerieveBalance();
+                    userAccount.RerieveBalance();
                     break;
 
                 case AccountActions.TransactionHistory:
                     userAccount.retrieveTTransactionHistory();
                     break;
                 case AccountActions.WithdrawATM:
-                    userAccount.withdrawFromATM(accountNum);
+                    userAccount.WithdrawFromATM(accountNum);
                     break;
                 case AccountActions.DepositATM:
-                    userAccount.depositToATM(accountNum);
+                    userAccount.DepositToATM(accountNum);
                     break;
                 case AccountActions.SendMoney:
                     long recipientAccountNumber;
                     Console.WriteLine("What is the recipient you would like to send to? Provide accoun number (long)");
                     long.TryParse(Console.ReadLine(), out recipientAccountNumber);
                     Account recepientAccount = FindAccount(recipientAccountNumber);
-                    userAccount.sendBetweenAccounts(accountNum, recepientAccount);
+                    userAccount.SendBetweenAccounts(accountNum, recepientAccount);
 
 
                     // userAccount.retrieveTTransactionHistory();

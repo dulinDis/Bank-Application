@@ -11,18 +11,19 @@ namespace ATM_excercise
     {
 
         public enum optionTypes { Wihdrawal, Deposit };
-        private optionTypes type;
-        private long accountNumber;
+
+        private optionTypes _type;
+        private long _accountNumber;
 
         public long AccountNumber { get
             {
-                return accountNumber;
+                return _accountNumber;
             }
             set 
             { 
                 if (value > 0) 
                 {
-                    accountNumber = value;
+                    _accountNumber = value;
                         }
             }
         }
@@ -31,20 +32,20 @@ namespace ATM_excercise
         {
             get
             {
-                return type;
+                return _type;
             }
             set
             {
-                type = value;
+                _type = value;
             }
         }
         public ATMTransaction(decimal amount, long accountNumber, CurrencyOptions currencyOption) : base (amount, currencyOption)
         {
-            Type = getTransactionType(amount);
+            Type = GetTransactionType(amount);
             AccountNumber = accountNumber;
         }
 
-        private optionTypes getTransactionType(decimal amount)
+        private optionTypes GetTransactionType(decimal amount)
         {
             if (amount > 0)
             {
@@ -55,7 +56,7 @@ namespace ATM_excercise
                 return optionTypes.Wihdrawal;
             }
         }
-        public void displayATMTransactionDetails()
+        public void DisplayATMTransactionDetails()
         {
             Console.WriteLine($"New transaction with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {Type}");
         }

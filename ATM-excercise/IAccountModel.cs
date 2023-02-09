@@ -13,7 +13,5 @@ namespace ATM_excercise
         bool ConcurrentSessionsAllowed { get; }
         accountTypes AccountType { get; }
 
-
-
 }
 }

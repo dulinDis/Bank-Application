@@ -8,17 +8,15 @@ namespace ATM_excercise
 {
     internal class BankDeposit : Transaction //,ITransactionModel
     {
-        private long recipientAccount;
+        private long _recipientAccount;
         public string type = "Bank Deposit";
 
         public long RecipientAccount
         {
-            get { return recipientAccount; }
+            get { return _recipientAccount; }
             set
             {
-
-                recipientAccount = value;
-
+                _recipientAccount = value;
             }
         }
 
@@ -27,7 +25,7 @@ namespace ATM_excercise
            RecipientAccount = recipientAccount;
         }
 
-        public void displayBankTransferDetails()
+        public void DisplayBankTransferDetails()
         {
             Console.WriteLine($"New bank deposit with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {type}. receiving party account: {RecipientAccount}");
 

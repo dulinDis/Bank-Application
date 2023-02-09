@@ -16,25 +16,22 @@ namespace ATM_excercise
         private long _senderAccount;
         private long _recipientAccount;
         private transferType _transferType;
+
         public string type="Transfer";
         public long SenderAccount
         {
             get { return _senderAccount; }
             set
             {
- 
                     _senderAccount = value;
-
             }
         }
         public long RecipientAccount
         {
             get { return _recipientAccount; }
             set
-            {
-               
+            {            
                     _recipientAccount = value;
-                
             }
         }
 
@@ -42,7 +39,6 @@ namespace ATM_excercise
         {
             get;
             set;
-
         }
 
         public BankTransfer (long senderAccount, long recipientAccount, transferType transferType, decimal amount, CurrencyOptions currencyOption) : base(amount, currencyOption)
@@ -52,7 +48,7 @@ namespace ATM_excercise
             TransferType = transferType;
         }
 
-        public void displayBankTransferDetails()
+        public void DisplayBankTransferDetails()
         {
             if (TransferType == transferType.outgoing)
             {
@@ -68,7 +64,7 @@ namespace ATM_excercise
               }
         }
 
-        public void performBankTransaction(Transaction transaction)
+        public void PerformBankTransaction(Transaction transaction)
         {
             throw new NotImplementedException();
         }
