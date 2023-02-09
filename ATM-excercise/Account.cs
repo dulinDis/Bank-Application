@@ -8,8 +8,6 @@ using System.Transactions;
 using System.Windows;
 namespace ATM_excercise
 {
-
-
     internal class Account : ITransactionModel
     {
         private string userName;
@@ -17,7 +15,7 @@ namespace ATM_excercise
         private decimal balance;
         private long accountNumber;
         private bool isLoggedIn= false;
-        private currencyOptions accountCurrency;
+        private CurrencyOptions accountCurrency;
         private List<Transaction> transactionHistory; 
 
         public string UserName { get; set; }
@@ -26,12 +24,12 @@ namespace ATM_excercise
         public long AccountNumber { get; }
         public bool IsLoggedIn { get; set; }
 
-        public currencyOptions AccountCurrency { get; set; }
+        public CurrencyOptions AccountCurrency { get; set; }
 
        public List<Transaction> TransactionHistory { get; set; }
        // public List<ITransferable> TransactionHistory { get; set; }
 
-        public Account (long accountNumber, string userName, string userSurname, currencyOptions currencyOption, decimal initialBalance=0)
+        public Account (long accountNumber, string userName, string userSurname, CurrencyOptions currencyOption, decimal initialBalance=0)
         {
             UserName = userName;
             UserSurname = userSurname;

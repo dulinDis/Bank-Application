@@ -13,27 +13,27 @@ namespace ATM_excercise
     internal class BankTransfer : Transaction, ITransactionModel
     {
 
-        private long senderAccount;
-        private long recipientAccount;
-        private transferType transferType;
+        private long _senderAccount;
+        private long _recipientAccount;
+        private transferType _transferType;
         public string type="Transfer";
         public long SenderAccount
         {
-            get { return senderAccount; }
+            get { return _senderAccount; }
             set
             {
  
-                    senderAccount = value;
+                    _senderAccount = value;
 
             }
         }
         public long RecipientAccount
         {
-            get { return recipientAccount; }
+            get { return _recipientAccount; }
             set
             {
                
-                    recipientAccount = value;
+                    _recipientAccount = value;
                 
             }
         }
@@ -45,7 +45,7 @@ namespace ATM_excercise
 
         }
 
-        public BankTransfer (long senderAccount, long recipientAccount, transferType transferType, decimal amount, currencyOptions currencyOption) : base(amount, currencyOption)
+        public BankTransfer (long senderAccount, long recipientAccount, transferType transferType, decimal amount, CurrencyOptions currencyOption) : base(amount, currencyOption)
         {
             SenderAccount = senderAccount;
             RecipientAccount = recipientAccount;
@@ -67,9 +67,15 @@ namespace ATM_excercise
 
               }
         }
-    //    public void performBankTransaction(BankTransfer transaction)
-    //    {
-     //       Console.WriteLine("bank transfer performed");
-     //   }
+
+        public void performBankTransaction(Transaction transaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        //    public void performBankTransaction(BankTransfer transaction)
+        //    {
+        //       Console.WriteLine("bank transfer performed");
+        //   }
     }
 }

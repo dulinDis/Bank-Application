@@ -38,7 +38,7 @@ namespace ATM_excercise
                 type = value;
             }
         }
-        public ATMTransaction(decimal amount, long accountNumber, currencyOptions currencyOption) : base (amount, currencyOption)
+        public ATMTransaction(decimal amount, long accountNumber, CurrencyOptions currencyOption) : base (amount, currencyOption)
         {
             Type = getTransactionType(amount);
             AccountNumber = accountNumber;

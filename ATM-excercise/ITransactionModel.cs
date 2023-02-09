@@ -8,11 +8,8 @@ namespace ATM_excercise
 {
      public interface ITransactionModel
     {
-       //   decimal amount { get; set; }
+        //   decimal amount { get; set; }
 
-        public void performBankTransaction(Transaction transaction)
-        {
-            Console.WriteLine("transaction performed");
-        }
+        //void performBankTransaction(Transaction transaction);
     }
 }

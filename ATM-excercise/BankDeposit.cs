@@ -22,7 +22,7 @@ namespace ATM_excercise
             }
         }
 
-        public BankDeposit(long recipientAccount, decimal amount, currencyOptions currencyOption) : base(amount, currencyOption)
+        public BankDeposit(long recipientAccount, decimal amount, CurrencyOptions currencyOption) : base(amount, currencyOption)
         {
            RecipientAccount = recipientAccount;
         }

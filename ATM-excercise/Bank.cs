@@ -10,26 +10,45 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise
 {
-    public enum currencyOptions { USD, EUR, PLN };// the multiaccount option yet not implemented
-    public enum accountActions { CheckBalance, TransactionHistory, WithdrawATM, DepositATM, SendMoney };
-    public enum bankingOperationTypes { ATMTransaction, BankTransfer, BankDeposit };
+    public enum CurrencyOptions
+    {
+        USD,
+        EUR,
+        PLN
+    }// the multiaccount option yet not implemented
 
-     internal class Bank
+    public enum AccountActions 
+    {
+        CheckBalance, 
+        TransactionHistory,
+        WithdrawATM, 
+        DepositATM, 
+        SendMoney 
+    }
+
+    public enum BankingOperationType
+    { 
+        ATMTransaction, 
+        BankTransfer, 
+        BankDeposit 
+    }
+
+    internal class Bank
     {
         //readonly
-        Dictionary<long, Account> accounts = new Dictionary<long, Account>();
+        Dictionary<long, Account> _accounts = new Dictionary<long, Account>();
 
         // account creation 
-        public long createAccount(string name, string surname, currencyOptions currency)
+        public long createAccount(string name, string surname, CurrencyOptions currency)
         {
-            return createAccount(name, surname, currency, 0);
+            return CreateAccount(name, surname, currency, 0);
         }
 
-        public long createAccount(string name, string surname, currencyOptions currency, decimal initialBalance)
+        public long CreateAccount(string name, string surname, CurrencyOptions currency, decimal initialBalance)
         {
             long accountNum = getNextAccountNumber();
             Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
-            accounts.Add(newAccount.AccountNumber, newAccount);
+            _accounts.Add(newAccount.AccountNumber, newAccount);
             if (initialBalance > 0)
             {
                 BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
@@ -40,14 +59,14 @@ namespace ATM_excercise
 
         private long getNextAccountNumber()
         {
-            return accounts.Count + 1;
+            return _accounts.Count + 1;
         }
 
 
         // account activities
-        public void reportAccountDetails(long accountNumber) // should be a method on account
+        public void ReportAccountDetails(long accountNumber) // should be a method on account
         {
-            Account storedAccount = findAccount(accountNumber);
+            Account storedAccount = FindAccount(accountNumber);
             Console.WriteLine($"Account no: {storedAccount.AccountNumber}.");
             Console.WriteLine($"Customer: {storedAccount.UserName} {storedAccount.UserSurname}.");
             Console.WriteLine($"Account currency: {storedAccount.AccountCurrency}.");
@@ -55,15 +74,15 @@ namespace ATM_excercise
         }
         public bool doesAccountExist(long accountNum)
         {
-            return accounts.ContainsKey(accountNum) ? true : false;
+            return _accounts.ContainsKey(accountNum) ? true : false;
         }
-        public Account findAccount(long accountNum)
+        public Account FindAccount(long accountNum)
         {
-            Account userAccount = accounts[accountNum];
+            Account userAccount = _accounts[accountNum];
             return userAccount;
         }
         //user login and logout mehods
-        public bool loginUser(long accountNum)
+        public bool LogUserIn(long accountNum)
         {
             if (!doesAccountExist(accountNum))
             {
@@ -72,26 +91,26 @@ namespace ATM_excercise
             }
             else
             {
-                Account user = findAccount(accountNum);
-                user.IsLoggedIn= true;
+                Account user = FindAccount(accountNum);
+                user.IsLoggedIn = true;
                 //accounts[accountNum].IsLoggedIn = true;
                 Console.WriteLine($"The login attempt successful. Welcome {user.UserName} {user.UserSurname}.");
                 return true;
             }
 
         }
-        public bool logoutUser(long accountNum)
+        public bool LogUserOut(long accountNum)
         {
 
             if (!doesAccountExist(accountNum))
             {
-                Console.WriteLine("cant log out user, the user with this accoun number doesnt exist"); 
+                Console.WriteLine("cant log out user, the user with this accoun number doesnt exist");
                 return false;
 
             }
             else
             {
-                accounts[accountNum].IsLoggedIn = false;
+                _accounts[accountNum].IsLoggedIn = false;
                 return true;
 
             }
@@ -101,9 +120,9 @@ namespace ATM_excercise
         public bool isUserLoggedIn(long accountNum)
         {
 
-            if (accounts.ContainsKey(accountNum))
+            if (_accounts.ContainsKey(accountNum))
             {
-                return accounts[accountNum].IsLoggedIn ? true : false;
+                return _accounts[accountNum].IsLoggedIn ? true : false;
 
             }
             else
@@ -112,38 +131,38 @@ namespace ATM_excercise
             }
 
         }
-        public void loggedUserActions(long accountNum, accountActions action)
+        public void LoggedUserActions(long accountNum, AccountActions action)
         {
-           // Console.WriteLine("accoun actions called with action: "+ action);
-            Account userAccount= findAccount(accountNum);
-           
-            switch(action)
+            // Console.WriteLine("accoun actions called with action: "+ action);
+            Account userAccount = FindAccount(accountNum);
+
+            switch (action)
             {
-                case accountActions.CheckBalance:
+                case AccountActions.CheckBalance:
                     userAccount.rerieveBalance();
                     break;
 
-                case accountActions.TransactionHistory:
-                   userAccount.retrieveTTransactionHistory();
+                case AccountActions.TransactionHistory:
+                    userAccount.retrieveTTransactionHistory();
                     break;
-                case accountActions.WithdrawATM:
-                    userAccount.withdrawFromATM(accountNum); 
+                case AccountActions.WithdrawATM:
+                    userAccount.withdrawFromATM(accountNum);
                     break;
-                case accountActions.DepositATM:
+                case AccountActions.DepositATM:
                     userAccount.depositToATM(accountNum);
                     break;
-                case accountActions.SendMoney:
+                case AccountActions.SendMoney:
                     long recipientAccountNumber;
                     Console.WriteLine("What is the recipient you would like to send to? Provide accoun number (long)");
                     long.TryParse(Console.ReadLine(), out recipientAccountNumber);
-                    Account recepientAccount = findAccount(recipientAccountNumber);
+                    Account recepientAccount = FindAccount(recipientAccountNumber);
                     userAccount.sendBetweenAccounts(accountNum, recepientAccount);
 
 
-                   // userAccount.retrieveTTransactionHistory();
-                   // userAccount.rerieveBalance();
-                   // recepientAccount.retrieveTTransactionHistory();
-                   // recepientAccount.rerieveBalance();
+                    // userAccount.retrieveTTransactionHistory();
+                    // userAccount.rerieveBalance();
+                    // recepientAccount.retrieveTTransactionHistory();
+                    // recepientAccount.rerieveBalance();
 
                     break;
                 default:
@@ -152,17 +171,16 @@ namespace ATM_excercise
 
             }
         }
-       
-        private void depositOnAccount(long accountNum, bankingOperationTypes transactionType) {
-            long recipientAccount;
-            bankingOperationTypes userOperation;
-            Console.WriteLine("Which accoun woul you like to send money to? (long)");
-            long.TryParse(Console.ReadLine(), out recipientAccount);
 
-            Console.WriteLine("What operat");
+        private void DepositOnAccount(long senderAccountNum, BankingOperationType bankingOperationType)
+        {
+            long recipientAccountNum;
+            Console.WriteLine("Which account would you like to send money to? (long)");
+            long.TryParse(Console.ReadLine(), out recipientAccountNum);
 
-          //  findAccount(accountNum).performTransaction(recipientAccount);
-        }   
+            Console.WriteLine("What operation");
 
+            //  findAccount(accountNum).performTransaction(recipientAccount);
+        }
     }
 }

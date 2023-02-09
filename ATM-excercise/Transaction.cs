@@ -15,7 +15,7 @@ namespace ATM_excercise
         private long transactionID;
         private decimal amount;
         public DateTime createdAt;
-        private currencyOptions currency;
+        private CurrencyOptions currency;
         public long TransactionID
         {
             get
@@ -42,7 +42,7 @@ namespace ATM_excercise
                
             }
         }
-        public currencyOptions Currency { get
+        public CurrencyOptions Currency { get
             {
                 return currency;
             } set
@@ -52,7 +52,7 @@ namespace ATM_excercise
         }
 
         public DateTime CreatedAt { get { return createdAt; } set { createdAt = value; } }
-        public Transaction(decimal amount, currencyOptions currencyOption)
+        public Transaction(decimal amount, CurrencyOptions currencyOption)
         {
             TransactionID = generateTransactionID();
             Amount = amount;
