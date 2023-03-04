@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise
 {
-     public interface ITransactionModel
+    public interface ITransactionModel
     {
-        //   decimal amount { get; set; }
+        long TransactionId { get; set; }
+        decimal Amount { get; set; }
+        Currency Currency { get; set; }
+        DateTime CreatedAt { get; set; }
 
-        //void performBankTransaction(Transaction transaction);
+        void PerformBankTransaction(Transaction transaction);
     }
 }

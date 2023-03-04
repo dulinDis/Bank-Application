@@ -9,69 +9,41 @@ using static ATM_excercise.ATMTransaction;
 
 namespace ATM_excercise
 {
-    public enum transferType {incoming, outgoing };
-    internal class BankTransfer : Transaction, ITransactionModel
+    public enum BankTransferType
     {
+        Incoming,
+        Outgoing
+    }
 
-        private long _senderAccount;
-        private long _recipientAccount;
-        private transferType _transferType;
+    internal class BankTransfer : Transaction
+    {
+        public long SenderAccount { get; set; }
 
-        public string type="Transfer";
-        public long SenderAccount
-        {
-            get { return _senderAccount; }
-            set
-            {
-                    _senderAccount = value;
-            }
-        }
-        public long RecipientAccount
-        {
-            get { return _recipientAccount; }
-            set
-            {            
-                    _recipientAccount = value;
-            }
-        }
+        public long RecipientAccount { get; set; }
 
-        public transferType TransferType
-        {
-            get;
-            set;
-        }
+        public BankTransferType BankTransferType { get; set; }
 
-        public BankTransfer (long senderAccount, long recipientAccount, transferType transferType, decimal amount, CurrencyOptions currencyOption) : base(amount, currencyOption)
+        public override BankingOperationType BankingOperationType => BankingOperationType.BankTransfer;
+
+        public BankTransfer (long senderAccount, long recipientAccount, BankTransferType transferType, decimal amount, Currency currencyOption) : base(amount, currencyOption)
         {
             SenderAccount = senderAccount;
             RecipientAccount = recipientAccount;
-            TransferType = transferType;
+            BankTransferType = transferType;
         }
 
         public void DisplayBankTransferDetails()
         {
-            if (TransferType == transferType.outgoing)
+            if (BankTransferType == BankTransferType.Outgoing)
             {
                 Console.WriteLine($"You sent on {CreatedAt}  {Amount * (-1)}  {Currency} to {RecipientAccount}");
-                Console.WriteLine($"New bank transfer with transaction ID {TransactionID} created on {CreatedAt} for value {Amount *(-1)} {Currency}. Transaction type: {type}. Tranfer type {TransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
-
+                Console.WriteLine($"New bank transfer with transaction ID {TransactionId} created on {CreatedAt} for value {Amount * (-1)} {Currency}. Transaction type: {BankingOperationType}. Tranfer type {BankTransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
             }
-            else {
+            else
+            {
                 Console.WriteLine($"You received on {CreatedAt}  {Amount} {Currency} from {SenderAccount}");
-                Console.WriteLine($"New bank transfer with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {type}. Tranfer type {TransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
-
-
-              }
+                Console.WriteLine($"New bank transfer with transaction ID {TransactionId} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {BankingOperationType}. Tranfer type {BankTransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
+            }
         }
-
-        public void PerformBankTransaction(Transaction transaction)
-        {
-            throw new NotImplementedException();
-        }
-
-        //    public void performBankTransaction(BankTransfer transaction)
-        //    {
-        //       Console.WriteLine("bank transfer performed");
-        //   }
     }
 }

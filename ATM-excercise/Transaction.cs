@@ -8,68 +8,43 @@ using System.Transactions;
 
 namespace ATM_excercise
 {
-    public abstract  class Transaction //: ITransferable
+    public abstract class Transaction
     {
-       // public enum currencyOptions { USD, EUR, PLN };
+        public static long LastTransactionId = 0; // is it updated correctly? - check and fix if needed; alternatively GUID could be used
 
-        private long _transactionID;
-        private decimal _amount;
-        public DateTime _createdAt;
-        private CurrencyOptions _currency;
-        public long TransactionID
+        public Transaction(decimal amount, Currency currency)
         {
-            get
-            {
-                return _transactionID;
-            }
-            set
-            {
-                _transactionID = value; //some random nummber assigns
-            }
-
-
-        }
-        public decimal Amount
-        {
-            get
-            {
-                return _amount;
-            }
-            set
-            {
-               
-                    _amount = value;
-               
-            }
-        }
-        public CurrencyOptions Currency { get
-            {
-                return _currency;
-            } set
-            {
-                _currency = value;
-            } 
-        }
-
-        public DateTime CreatedAt { get { return _createdAt; } set { _createdAt = value; } }
-        public Transaction(decimal amount, CurrencyOptions currencyOption)
-        {
-            TransactionID = generateTransactionID();
+            TransactionId = ++LastTransactionId;
             Amount = amount;
             CreatedAt = DateTime.Now;
-            Currency = _currency;
+            Currency = currency;
         }
 
-        private long generateTransactionID()
+        public long TransactionId { get; private set; }
+
+        public decimal Amount { get; private set; }
+
+        public Currency Currency { get; private set; }
+
+        public DateTime CreatedAt { get; private set; }
+
+        public abstract BankingOperationType BankingOperationType { get; }
+
+        public string BankingOperationTypeDisplayText => BankingOperationType switch
         {
-            return 44;
-        }
+            BankingOperationType.BankTransfer => "Bank transfer",
+            BankingOperationType.ATMTransaction => "ATM transaction",
+            BankingOperationType.BankDeposit => "Bank despoit",
+            _ => throw new ArgumentOutOfRangeException(nameof(BankingOperationType))
+        };
 
-      //  public void performBankTransaction(Transaction transaction)
-      //  {
-     //       Console.WriteLine("transaction performed");
-      //  }
-
+        //Alternative approach
+        //public string GetTransactionTypeDisplayText => this switch
+        //{
+        //    BankTransfer => "Bank transfer",
+        //    ATMTransaction => "ATM transaction",
+        //    BankDeposit => "Bank despoit",
+        //    _ => throw new ArgumentOutOfRangeException(this.GetType().Name)
+        //};
     }
-
 }

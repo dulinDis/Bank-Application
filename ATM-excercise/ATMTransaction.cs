@@ -6,67 +6,49 @@ using System.Threading.Tasks;
 using static ATM_excercise.Transaction;
 
 namespace ATM_excercise
-{ 
-    internal class ATMTransaction : Transaction //,ITransactionModel
+{
+    public enum ATMTransactionType 
+    { 
+        Withdrawal,
+        Deposit 
+    }
+
+    internal class ATMTransaction : Transaction
     {
-
-        public enum optionTypes { Wihdrawal, Deposit };
-
-        private optionTypes _type;
         private long _accountNumber;
 
-        public long AccountNumber { get
+        public long AccountNumber
+        {
+            get => _accountNumber;
+            set
             {
-                return _accountNumber;
-            }
-            set 
-            { 
-                if (value > 0) 
-                {
-                    _accountNumber = value;
-                        }
+                if (value <= 0)
+                    throw new ArgumentException(nameof(AccountNumber));
+
+                _accountNumber = value;
             }
         }
 
-        public optionTypes Type
+        public ATMTransactionType ATMTransactionType { get; set; }
+
+        public override BankingOperationType BankingOperationType => BankingOperationType.ATMTransaction;
+
+        public ATMTransaction(decimal amount, long accountNumber, Currency currencyOption) : base(amount, currencyOption)
         {
-            get
-            {
-                return _type;
-            }
-            set
-            {
-                _type = value;
-            }
-        }
-        public ATMTransaction(decimal amount, long accountNumber, CurrencyOptions currencyOption) : base (amount, currencyOption)
-        {
-            Type = GetTransactionType(amount);
+            ATMTransactionType = GetTransactionType(amount);
             AccountNumber = accountNumber;
         }
 
-        private optionTypes GetTransactionType(decimal amount)
+        private ATMTransactionType GetTransactionType(decimal amount)
         {
-            if (amount > 0)
-            {
-                return optionTypes.Deposit;
-            }
-            else
-            {
-                return optionTypes.Wihdrawal;
-            }
+            return amount > 0 
+                ? ATMTransactionType.Deposit 
+                : ATMTransactionType.Withdrawal;
         }
+
         public void DisplayATMTransactionDetails()
         {
-            Console.WriteLine($"New transaction with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {Type}");
+            Console.WriteLine($"New transaction with transaction ID {TransactionId} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {ATMTransactionType}");
         }
-
-
-
-       //  public void performBankTransaction(ATMTransaction transaction)
-      //    {
-      //      Console.WriteLine("atm transaction performed");
-        //  }
-
     }
 }

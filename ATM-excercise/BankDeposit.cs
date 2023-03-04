@@ -6,35 +6,20 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise
 {
-    internal class BankDeposit : Transaction //,ITransactionModel
+    internal class BankDeposit : Transaction
     {
-        private long _recipientAccount;
-        public string type = "Bank Deposit";
+        public long RecipientAccount { get; set; }
 
-        public long RecipientAccount
-        {
-            get { return _recipientAccount; }
-            set
-            {
-                _recipientAccount = value;
-            }
-        }
+        public override BankingOperationType BankingOperationType => BankingOperationType.BankDeposit;
 
-        public BankDeposit(long recipientAccount, decimal amount, CurrencyOptions currencyOption) : base(amount, currencyOption)
+        public BankDeposit(long recipientAccount, decimal amount, Currency currencyOption) : base(amount, currencyOption)
         {
-           RecipientAccount = recipientAccount;
+            RecipientAccount = recipientAccount;
         }
 
         public void DisplayBankTransferDetails()
         {
-            Console.WriteLine($"New bank deposit with transaction ID {TransactionID} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {type}. receiving party account: {RecipientAccount}");
-
+            Console.WriteLine($"New bank deposit with transaction ID {TransactionId} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {BankingOperationTypeDisplayText}. Receiving party account: {RecipientAccount}.");
         }
-
-        //public void performBankTransaction(BankDeposit transaction)
-        //{
-        //    Console.WriteLine("bank deposit performed");
-       // }
-
     }
 }

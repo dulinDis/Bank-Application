@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise
 {
-    enum accountTypes { currentAccount, savingsAccount }
+    enum AccountTypes 
+    { 
+        CurrentAccount, 
+        SavingsAccount 
+    }
+
     internal interface IAccountModel
-    {
-
+    { 
         bool ConcurrentSessionsAllowed { get; }
-        accountTypes AccountType { get; }
-
-}
+        AccountTypes AccountType { get; }
+    }
 }
