@@ -98,7 +98,6 @@ namespace ATM_excercise
         {
             if (!CheckIfAccountExists(accountNum))
             {
-                Console.WriteLine("cant log out user, the user with this accoun number doesnt exist");
                 return false;
             }
             else
@@ -108,52 +107,56 @@ namespace ATM_excercise
             }
         }
 
-        public bool CheckIsUserLoggedInAccount(long accountNum)
-        {
-            if (_accounts.ContainsKey(accountNum))
-            {
-                return _accounts[accountNum].IsLoggedIn ? true : false;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //public bool CheckIsUserLoggedInAccount(long accountNum)
+        //{
+        //    if (_accounts.ContainsKey(accountNum))
+        //    {
+        //        return _accounts[accountNum].IsLoggedIn ? true : false;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
 
-        public void LoggedUserActions(long accountNum, AccountActions action)
-        {
-            Account userAccount = FindAccount(accountNum);
+        //public void LoggedUserActions(long accountNum, AccountActions action)
+        //{
+        //    Account userAccount = FindAccount(accountNum);
 
-            switch (action)
-            {
-                case AccountActions.CheckBalance:
-                    userAccount.RerieveBalance();
-                    break;
+        //    switch (action)
+        //    {
+        //        case AccountActions.CheckBalance:
+        //            //CheckBalance(userAccount);
+        //            // here provide function from user interface
+        //            //userAccount.RetrieveBalance();
+        //            break;
 
-                case AccountActions.TransactionHistory:
-                    userAccount.RetrieveTransactionHistory();
-                    break;
+        //        case AccountActions.TransactionHistory:
+        //           //userAccount.RetrieveTransactionHistory();
+        //            break;
 
-                case AccountActions.WithdrawATM:
-                    userAccount.WithdrawFromATM(accountNum);
-                    break;
+        //        case AccountActions.WithdrawATM:
+        //          //  userAccount.WithdrawFromATM(accountNum);
+        //            break;
 
-                case AccountActions.DepositATM:
-                    userAccount.DepositToATM(accountNum);
-                    break;
+        //        case AccountActions.DepositATM:
+        //            userAccount.DepositToATM(accountNum);
+        //            break;
 
-                case AccountActions.SendMoney:
-                    Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
-                    long.TryParse(Console.ReadLine(), out long recipientAccountNumber);
-                    Account recepientAccount = FindAccount(recipientAccountNumber);
-                    userAccount.TransferToAccount(recepientAccount);
-                    break;
+        //        case AccountActions.SendMoney:
+        //          //  Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
+        //          //  long.TryParse(Console.ReadLine(), out long recipientAccountNumber);
+        //          //  Account recepientAccount = FindAccount(recipientAccountNumber);
+        //          //  userAccount.TransferToAccount(recepientAccount);
 
-                default:
-                    Console.WriteLine("Error");
-                    break;
-            }
-        }
+        //          // here provide function from user interface
+        //            break;
+
+        //        default:
+        //            Console.WriteLine("Error");
+        //            break;
+        //    }
+        //}
     
         #endregion
     }

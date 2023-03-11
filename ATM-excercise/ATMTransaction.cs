@@ -13,7 +13,7 @@ namespace ATM_excercise
         Deposit 
     }
 
-    internal class ATMTransaction : Transaction
+    public class ATMTransaction : Transaction
     {
         private long _accountNumber;
 
@@ -46,9 +46,5 @@ namespace ATM_excercise
                 : ATMTransactionType.Withdrawal;
         }
 
-        public void DisplayATMTransactionDetails()
-        {
-            Console.WriteLine($"New transaction with transaction ID {TransactionId} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {ATMTransactionType}");
-        }
     }
 }

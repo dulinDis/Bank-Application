@@ -15,7 +15,7 @@ namespace ATM_excercise
         Outgoing
     }
 
-    internal class BankTransfer : Transaction
+    public class BankTransfer : Transaction
     {
         public long SenderAccount { get; set; }
 
@@ -30,20 +30,6 @@ namespace ATM_excercise
             SenderAccount = senderAccount;
             RecipientAccount = recipientAccount;
             BankTransferType = transferType;
-        }
-
-        public void DisplayBankTransferDetails()
-        {
-            if (BankTransferType == BankTransferType.Outgoing)
-            {
-                Console.WriteLine($"You sent on {CreatedAt}  {Amount * (-1)}  {Currency} to {RecipientAccount}");
-                Console.WriteLine($"New bank transfer with transaction ID {TransactionId} created on {CreatedAt} for value {Amount * (-1)} {Currency}. Transaction type: {BankingOperationType}. Tranfer type {BankTransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
-            }
-            else
-            {
-                Console.WriteLine($"You received on {CreatedAt}  {Amount} {Currency} from {SenderAccount}");
-                Console.WriteLine($"New bank transfer with transaction ID {TransactionId} created on {CreatedAt} for value {Amount} {Currency}. Transaction type: {BankingOperationType}. Tranfer type {BankTransferType}. Sending party account: {SenderAccount} and receiving party account: {RecipientAccount}");
-            }
         }
     }
 }
