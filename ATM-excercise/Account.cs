@@ -11,6 +11,8 @@ namespace ATM_excercise
 {
     public class Account
     {
+
+        public string Id { get; set; } //id for raven
         public Account(long accountNumber, string userName, string userSurname, Currency currencyOption, decimal initialBalance = 0)
         {
             UserName = userName;
@@ -29,9 +31,6 @@ namespace ATM_excercise
         public Currency AccountCurrency { get; set; }
         public List<Transaction> TransactionHistory { get; set; }
 
-        //move to service
-
-
         public decimal UpdateBalance(decimal amount)
         {
             Balance = Balance + amount;
@@ -40,7 +39,6 @@ namespace ATM_excercise
 
         public bool AddTransactionToTransactionHistory(Transaction transaction)
         {
-          
               TransactionHistory.Add(transaction);
               return true;
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATM_excercise.Raven;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -27,7 +28,7 @@ namespace ATM_excercise
         DepositATM,
         SendMoney
     }
-   
+
     public enum BankingOperationType
     {
         ATMTransaction,
@@ -39,10 +40,13 @@ namespace ATM_excercise
     {
         private Dictionary<long, Account> _accounts = new Dictionary<long, Account>();
 
+
         #region account creation
 
         public long CreateAccount(string name, string surname, Currency currency)
         {
+
+
             return CreateAccount(name, surname, currency, 0);
         }
 
@@ -50,6 +54,16 @@ namespace ATM_excercise
         {
             long accountNum = GenerateNextAccountNumber();
             Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
+
+            using (var session = DocumentStoreHolder.Store.OpenSession())
+            {
+                session.Store(newAccount);
+                session.SaveChanges();
+            }
+
+
+
+
             _accounts.Add(newAccount.AccountNumber, newAccount);
 
             if (initialBalance > 0)
@@ -77,10 +91,9 @@ namespace ATM_excercise
 
         public Account FindAccount(long accountNum)
         {
-            //fix the fact if accoun doestn exist TODO:
             return _accounts[accountNum];
         }
-        
+
         public bool LogUserIntoAccount(long accountNum, out Account account)
         {
             if (!CheckIfAccountExists(accountNum))
@@ -166,70 +179,40 @@ namespace ATM_excercise
         public ATMTransaction DepositToATM(long accountNum, decimal amount)
         {
             Account userAccount = FindAccount(accountNum);
+
             ATMTransaction transaction = new ATMTransaction(amount, accountNum, userAccount.AccountCurrency);
             userAccount.UpdateBalance(amount);
             userAccount.AddTransactionToTransactionHistory(transaction);
+
             return transaction;
         }
 
         public ATMTransaction WithdrawFromATM(long accountNum, decimal amount)
         {
+            Account userAccount = FindAccount(accountNum);
 
+            ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNum, userAccount.AccountCurrency);
+            userAccount.UpdateBalance((-1) * amount);
+            userAccount.AddTransactionToTransactionHistory(transaction);
 
-                Account userAccount = FindAccount(accountNum);
-                // for case if there is no account!
-
-                ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNum, userAccount.AccountCurrency);
-
-                //balance doesn update after sending stuff
-                userAccount.UpdateBalance((-1) * amount);
-                userAccount.AddTransactionToTransactionHistory(transaction);
-                return transaction;
-                      
+            return transaction;
         }
 
         public BankTransfer TransferToAccount(long accountNum, Account recipientAccount, decimal amount)
-        
+
         {
             Account userAccount = FindAccount(accountNum);
 
             BankTransfer transactionOutgoing = new BankTransfer(accountNum, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), userAccount.AccountCurrency);
-            userAccount.UpdateBalance((-1)*amount);
+            userAccount.UpdateBalance((-1) * amount);
             userAccount.AddTransactionToTransactionHistory(transactionOutgoing);
 
             BankTransfer transacionIncoming = new BankTransfer(accountNum, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, userAccount.AccountCurrency);
             recipientAccount.UpdateBalance(amount);
-            recipientAccount.AddTransactionToTransactionHistory(transacionIncoming); 
+            recipientAccount.AddTransactionToTransactionHistory(transacionIncoming);
+
             return transactionOutgoing;
         }
 
-
-        //public BankTransfer TransferToAccount(Account recipientAccount, decimal amount)
-        //{
-        //    BankTransfer transactionOutgoing = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), AccountCurrency);
-        //    Balance -= amount;
-        //    TransactionHistory.Add(transactionOutgoing);
-
-        //    BankTransfer transacionIncoming = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, AccountCurrency);
-        //    recipientAccount.Balance += amount;
-        //    recipientAccount.TransactionHistory.Add(transacionIncoming);
-        //    return transactionOutgoing;
-        //}
-
-        //public ATMTransaction DepositToATM(decimal amount)
-        //{
-        //    ATMTransaction transaction = new ATMTransaction(amount, AccountNumber, AccountCurrency);
-        //    Balance += amount;
-        //    TransactionHistory.Add(transaction);
-        //    return transaction;
-        //}
-
-        //public ATMTransaction WithdrawFromATM(long accountNumber, decimal amount)
-        //{
-        //    ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNumber, AccountCurrency);
-        //    Balance -= amount;
-        //    TransactionHistory.Add(transaction);
-        //    return transaction;
-        //}
     }
 }

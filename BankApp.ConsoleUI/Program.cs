@@ -44,8 +44,8 @@ namespace BankApp.ConsoleUI
         
         static void Main(string[] args)
         {
-            long accountNum1 = bankService.CreateAccount("Maja", "Kowalska", Currency.PLN, 100);
-            long accountNum2 = bankService.CreateAccount("Andrzej", "Bujakowski", Currency.PLN, 100);
+            //long accountNum1 = bankService.CreateAccount("Maja", "Kowalska", Currency.PLN, 100);
+            //long accountNum2 = bankService.CreateAccount("Andrzej", "Bujakowski", Currency.PLN, 100);
 
             Console.WriteLine("Hello stranger!");
             MainMenu.Run();
@@ -131,7 +131,6 @@ namespace BankApp.ConsoleUI
             while (!accountExists)
             {
                 Console.WriteLine("Invalid recipient number. Provide account number (long)");
-
                 Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
                 recipientAccountNumber = Utils.ReadLong();
                 accountExists = bankService.CheckIfAccountExists(recipientAccountNumber);
@@ -145,7 +144,6 @@ namespace BankApp.ConsoleUI
             }
             else
             {
-                //BankTransfer bankTransfer = storedAccount.TransferToAccount(recepientAccount, amount);
                 BankTransfer bankTransfer = bankService.TransferToAccount(storedAccount.AccountNumber, recepientAccount, amount);
                 DisplayBankTransferDetails(bankTransfer);
             }
@@ -157,7 +155,6 @@ namespace BankApp.ConsoleUI
 
             Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
             Console.WriteLine("how much would you like to withdraw? (decimal)? To escape press esc on your keyboard");
-           // var line = Console.ReadLine();
             var amount = Utils.ReadDec();
 
             if (!Utils.IsPositive(amount) || amount >= storedAccount.Balance)
