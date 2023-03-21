@@ -29,32 +29,20 @@ namespace ATM_excercise
         public Currency AccountCurrency { get; set; }
         public List<Transaction> TransactionHistory { get; set; }
 
-        public BankTransfer TransferToAccount(Account recipientAccount, decimal amount)
-        {
-            BankTransfer transactionOutgoing = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), AccountCurrency);
-            Balance -= amount;
-            TransactionHistory.Add(transactionOutgoing);
+        //move to service
 
-            BankTransfer transacionIncoming = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, AccountCurrency);
-            recipientAccount.Balance += amount;
-            recipientAccount.TransactionHistory.Add(transacionIncoming);
-            return transactionOutgoing;
+
+        public decimal UpdateBalance(decimal amount)
+        {
+            Balance = Balance + amount;
+            return Balance;
         }
 
-        public ATMTransaction DepositToATM(decimal amount)
+        public bool AddTransactionToTransactionHistory(Transaction transaction)
         {
-            ATMTransaction transaction = new ATMTransaction(amount, AccountNumber, AccountCurrency);
-            Balance += amount;
-            TransactionHistory.Add(transaction);
-            return transaction;
-        }
-
-        public ATMTransaction WithdrawFromATM(long accountNumber, decimal amount)
-        {
-            ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNumber, AccountCurrency);
-            Balance -= amount;
-            TransactionHistory.Add(transaction);
-            return transaction;
+          
+              TransactionHistory.Add(transaction);
+              return true;
         }
     }
 }

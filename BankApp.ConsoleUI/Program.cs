@@ -33,7 +33,7 @@ namespace BankApp.ConsoleUI
                 new MenuItem("Retrieve transaction history", RetrieveTransactionHistory),
                 new MenuItem("Withdraw money in ATM", WithdrawFromATM),
                 new MenuItem("Deposit money in ATM", DepositToATM),
-                new MenuItem("Transfer monney between accounts", TransferToAccount),   
+                new MenuItem("Transfer money between accounts", TransferToAccount),   
                 new MenuItem("Logout", LogOut),
             }
         };
@@ -107,7 +107,7 @@ namespace BankApp.ConsoleUI
 
             if (Utils.IsPositive(amount))
             {
-                ATMTransaction transaction = storedAccount.DepositToATM(amount);
+                ATMTransaction transaction = bankService.DepositToATM(storedAccount.AccountNumber,amount);
                 DisplayATMTransactionDetails(transaction); 
             }
             else
@@ -127,16 +127,26 @@ namespace BankApp.ConsoleUI
 
             Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
             long recipientAccountNumber = Utils.ReadLong();
+            bool accountExists = bankService.CheckIfAccountExists(recipientAccountNumber);
+            while (!accountExists)
+            {
+                Console.WriteLine("Invalid recipient number. Provide account number (long)");
+
+                Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
+                recipientAccountNumber = Utils.ReadLong();
+                accountExists = bankService.CheckIfAccountExists(recipientAccountNumber);
+            }
             Account recepientAccount = bankService.FindAccount(recipientAccountNumber);
 
-            if (!Utils.IsPositive(amount) || amount >= storedAccount.Balance)
+                if (!Utils.IsPositive(amount) || amount >= storedAccount.Balance)
             {
                 Console.WriteLine("Invalid operation.");
                 Console.WriteLine($"Try again.");
             }
             else
             {
-                BankTransfer bankTransfer = storedAccount.TransferToAccount(recepientAccount, amount);
+                //BankTransfer bankTransfer = storedAccount.TransferToAccount(recepientAccount, amount);
+                BankTransfer bankTransfer = bankService.TransferToAccount(storedAccount.AccountNumber, recepientAccount, amount);
                 DisplayBankTransferDetails(bankTransfer);
             }
             LoggedUserMenu.Run();
@@ -158,7 +168,7 @@ namespace BankApp.ConsoleUI
             }
             else
             {
-                ATMTransaction transaction = storedAccount.WithdrawFromATM(loggedUserAccountNum, amount);
+                ATMTransaction transaction = bankService.WithdrawFromATM(loggedUserAccountNum, amount);
                 DisplayATMTransactionDetails(transaction);
             }
             LoggedUserMenu.Run();

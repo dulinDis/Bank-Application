@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace ATM_excercise
 {
@@ -76,6 +77,7 @@ namespace ATM_excercise
 
         public Account FindAccount(long accountNum)
         {
+            //fix the fact if accoun doestn exist TODO:
             return _accounts[accountNum];
         }
         
@@ -157,7 +159,77 @@ namespace ATM_excercise
         //            break;
         //    }
         //}
-    
+
         #endregion
+
+
+        public ATMTransaction DepositToATM(long accountNum, decimal amount)
+        {
+            Account userAccount = FindAccount(accountNum);
+            ATMTransaction transaction = new ATMTransaction(amount, accountNum, userAccount.AccountCurrency);
+            userAccount.UpdateBalance(amount);
+            userAccount.AddTransactionToTransactionHistory(transaction);
+            return transaction;
+        }
+
+        public ATMTransaction WithdrawFromATM(long accountNum, decimal amount)
+        {
+
+
+                Account userAccount = FindAccount(accountNum);
+                // for case if there is no account!
+
+                ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNum, userAccount.AccountCurrency);
+
+                //balance doesn update after sending stuff
+                userAccount.UpdateBalance((-1) * amount);
+                userAccount.AddTransactionToTransactionHistory(transaction);
+                return transaction;
+                      
+        }
+
+        public BankTransfer TransferToAccount(long accountNum, Account recipientAccount, decimal amount)
+        
+        {
+            Account userAccount = FindAccount(accountNum);
+
+            BankTransfer transactionOutgoing = new BankTransfer(accountNum, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), userAccount.AccountCurrency);
+            userAccount.UpdateBalance((-1)*amount);
+            userAccount.AddTransactionToTransactionHistory(transactionOutgoing);
+
+            BankTransfer transacionIncoming = new BankTransfer(accountNum, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, userAccount.AccountCurrency);
+            recipientAccount.UpdateBalance(amount);
+            recipientAccount.AddTransactionToTransactionHistory(transacionIncoming); 
+            return transactionOutgoing;
+        }
+
+
+        //public BankTransfer TransferToAccount(Account recipientAccount, decimal amount)
+        //{
+        //    BankTransfer transactionOutgoing = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), AccountCurrency);
+        //    Balance -= amount;
+        //    TransactionHistory.Add(transactionOutgoing);
+
+        //    BankTransfer transacionIncoming = new BankTransfer(AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, AccountCurrency);
+        //    recipientAccount.Balance += amount;
+        //    recipientAccount.TransactionHistory.Add(transacionIncoming);
+        //    return transactionOutgoing;
+        //}
+
+        //public ATMTransaction DepositToATM(decimal amount)
+        //{
+        //    ATMTransaction transaction = new ATMTransaction(amount, AccountNumber, AccountCurrency);
+        //    Balance += amount;
+        //    TransactionHistory.Add(transaction);
+        //    return transaction;
+        //}
+
+        //public ATMTransaction WithdrawFromATM(long accountNumber, decimal amount)
+        //{
+        //    ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNumber, AccountCurrency);
+        //    Balance -= amount;
+        //    TransactionHistory.Add(transaction);
+        //    return transaction;
+        //}
     }
 }
