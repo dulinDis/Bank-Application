@@ -44,9 +44,6 @@ namespace BankApp.ConsoleUI
 
         static void Main(string[] args)
         {
-            //long accountNum1 = bankService.CreateAccount("Maja", "Kowalska", Currency.PLN, 100);
-            //long accountNum2 = bankService.CreateAccount("Andrzej", "Bujakowski", Currency.PLN, 100);
-
             Console.WriteLine("Hello stranger!");
             MainMenu.Run();
         }
@@ -119,6 +116,7 @@ namespace BankApp.ConsoleUI
         }
 
         static public void TransferToAccount()
+        
         {
             Account senderAccount = bankService.GetAccount(loggedUserAccountNum);
 
@@ -217,7 +215,7 @@ namespace BankApp.ConsoleUI
 
         static void Exit()
         {
-
+            System.Environment.Exit(1);
         }
 
         static Currency ReadCurrencyOption()
@@ -244,9 +242,9 @@ namespace BankApp.ConsoleUI
         static void CreateAccount()
         {
             Console.WriteLine("First name:");
-            string firstName = Console.ReadLine();
+            string firstName = Console.ReadLine().Trim();
             Console.WriteLine("Surname:");
-            string lastName = Console.ReadLine();
+            string lastName = Console.ReadLine().Trim();
             Console.WriteLine("Inital deposit (decimal):");
             decimal balance = Utils.ReadDec();
             Currency currency = ReadCurrencyOption();

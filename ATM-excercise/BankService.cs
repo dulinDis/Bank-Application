@@ -1,4 +1,5 @@
 ﻿using ATM_excercise.Raven;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace ATM_excercise
     {
         private Dictionary<long, Account> _accounts = new Dictionary<long, Account>();
 
-
+        //private long accountsCreatedUntilNow = 0;
         #region account creation
 
         public long CreateAccount(string name, string surname, Currency currency)
@@ -52,26 +53,51 @@ namespace ATM_excercise
 
         public long CreateAccount(string name, string surname, Currency currency, decimal initialBalance)
         {
-            long accountNum = GenerateNextAccountNumber();//TOFIX: guid
-            Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
-
-            if (initialBalance > 0)
+            try
             {
-                BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
-                newAccount.TransactionHistory.Add(initialDeposit);
-            }
+                long accountNum = GenerateNextAccountNumber();
+                Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
 
-            using (var session = DocumentStoreHolder.Store.OpenSession())
-            {
-                session.Store(newAccount);
-                session.SaveChanges();
+                if (initialBalance > 0)
+                {
+                    BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
+                    newAccount.TransactionHistory.Add(initialDeposit);
+                }
+
+                using (var session = DocumentStoreHolder.Store.OpenSession())
+                {
+                    session.Store(newAccount);
+                    session.SaveChanges();
+                }
+                return accountNum;
             }
-            return accountNum;
+            catch (Exception ex)
+            { 
+                throw new Exception("Couldn't create new account", ex);
+            }
         }
 
         private long GenerateNextAccountNumber()
         {
-            return _accounts.Count + 1; //fugure ou wih guid TOFIXs
+            try
+            {
+                bool isUniqueAccountNumber = false;
+                long randomlyGeneratedAccountNumber;
+                do
+                {
+                    Random generator = new Random();
+                    long.TryParse(generator.Next(0, 999999).ToString("D3"), out randomlyGeneratedAccountNumber); //somethign cn go wrong
+                    Account existingAccount = GetAccount(randomlyGeneratedAccountNumber);
+                    isUniqueAccountNumber = (existingAccount == null) ? true : false;
+                } while (isUniqueAccountNumber == false);
+
+                return randomlyGeneratedAccountNumber;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         #endregion
@@ -81,7 +107,7 @@ namespace ATM_excercise
         public bool LogUserIntoAccount(long accountNum, out Account updatedAccount)
         {
 
-           Account currentAccount = GetAccount(accountNum);
+            Account currentAccount = GetAccount(accountNum);
 
 
             if (currentAccount != null)
@@ -89,7 +115,7 @@ namespace ATM_excercise
                 using (var session = DocumentStoreHolder.Store.OpenSession())
                 {
                     updatedAccount = session.Query<Account>().Single(acc => acc.AccountNumber == accountNum);
-                    updatedAccount.IsLoggedIn= true;
+                    updatedAccount.IsLoggedIn = true;
                     session.SaveChanges();
                     return true;
                 }
@@ -161,11 +187,11 @@ namespace ATM_excercise
         public Transaction AddTransactionToTransactionHistory(long accountNum, Transaction transaction)
         {
             using (var session = DocumentStoreHolder.Store.OpenSession())
-                {
-                    Account updatedAccount = session.Query<Account>().Single(acc => acc.AccountNumber == accountNum);
-                    updatedAccount.TransactionHistory.Add(transaction);
-                    session.SaveChanges();
-                }
+            {
+                Account updatedAccount = session.Query<Account>().Single(acc => acc.AccountNumber == accountNum);
+                updatedAccount.TransactionHistory.Add(transaction);
+                session.SaveChanges();
+            }
             return transaction;
 
         }
@@ -301,8 +327,8 @@ namespace ATM_excercise
             ATMTransaction transaction = new ATMTransaction(amount * (-1), accountNum, userAccount.AccountCurrency);
             UpdateBalance(accountNum, (-1) * amount);
             AddTransactionToTransactionHistory(accountNum, transaction);
-           //userAccount.UpdateBalance((-1) * amount);
-           //userAccount.AddTransactionToTransactionHistory(transaction);
+            //userAccount.UpdateBalance((-1) * amount);
+            //userAccount.AddTransactionToTransactionHistory(transaction);
             return transaction;
         }
 
@@ -360,9 +386,10 @@ namespace ATM_excercise
                 ravenSenderAccount.TransactionHistory.Add(transactionOutgoing);
                 ravenRecipientAccount.TransactionHistory.Add(transacionIncoming);
 
+
                 session.SaveChanges();
 
-            } 
+            }
             return transactionOutgoing;
         }
 
