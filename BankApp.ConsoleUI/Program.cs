@@ -33,7 +33,7 @@ namespace BankApp.ConsoleUI
                 new MenuItem("Retrieve transaction history", RetrieveTransactionHistory),
                 new MenuItem("Withdraw money in ATM", WithdrawFromATM),
                 new MenuItem("Deposit money in ATM", DepositToATM),
-                new MenuItem("Transfer money between accounts", TransferToAccount),   
+                new MenuItem("Transfer money between accounts", TransferToAccount),
                 new MenuItem("Logout", LogOut),
             }
         };
@@ -41,7 +41,7 @@ namespace BankApp.ConsoleUI
         static BankService bankService = new BankService();
         static long loggedUserAccountNum = 0; //use Account instead of long here
 
-        
+
         static void Main(string[] args)
         {
             //long accountNum1 = bankService.CreateAccount("Maja", "Kowalska", Currency.PLN, 100);
@@ -53,17 +53,16 @@ namespace BankApp.ConsoleUI
 
         static void CheckBalance()
         {
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("Account balance:");
-            Console.WriteLine(storedAccount.Balance);
-            Console.WriteLine(storedAccount.AccountCurrency);
+            Console.WriteLine($"{storedAccount.Balance} {storedAccount.AccountCurrency}");
 
             LoggedUserMenu.Run();
         }
 
         static void RetrieveTransactionHistory()
         {
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("Transaction history:");
             if (storedAccount.TransactionHistory.Count > 0)
             {
@@ -101,14 +100,14 @@ namespace BankApp.ConsoleUI
 
         static public void DepositToATM()
         {
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("How much would you like deposit (decimal)?");
             var amount = Utils.ReadDec();
 
             if (Utils.IsPositive(amount))
             {
-                ATMTransaction transaction = bankService.DepositToATM(storedAccount.AccountNumber,amount);
-                DisplayATMTransactionDetails(transaction); 
+                ATMTransaction transaction = bankService.DepositToATM(storedAccount.AccountNumber, amount);
+                DisplayATMTransactionDetails(transaction);
             }
             else
             {
@@ -121,30 +120,41 @@ namespace BankApp.ConsoleUI
 
         static public void TransferToAccount()
         {
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account senderAccount = bankService.GetAccount(loggedUserAccountNum);
+
             Console.WriteLine("How much would you like to send (decimal)?");
             var amount = Utils.ReadDec();
 
             Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
             long recipientAccountNumber = Utils.ReadLong();
-            bool accountExists = bankService.CheckIfAccountExists(recipientAccountNumber);
-            while (!accountExists)
+            
+            while (loggedUserAccountNum == recipientAccountNumber)
+            {
+                Console.WriteLine("Invalid recipient number. You can't send money to yourself. Provide another account number (long)");
+                Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
+                recipientAccountNumber = Utils.ReadLong();
+            };
+            Account recipientAccount = bankService.GetAccount(recipientAccountNumber);
+
+
+            while (recipientAccount == null)
             {
                 Console.WriteLine("Invalid recipient number. Provide account number (long)");
                 Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
                 recipientAccountNumber = Utils.ReadLong();
-                accountExists = bankService.CheckIfAccountExists(recipientAccountNumber);
+                recipientAccount = bankService.GetAccount(recipientAccountNumber);
             }
-            Account recepientAccount = bankService.FindAccount(recipientAccountNumber);
+           
 
-                if (!Utils.IsPositive(amount) || amount >= storedAccount.Balance)
+
+            if (!Utils.IsPositive(amount) || amount >= senderAccount.Balance)
             {
                 Console.WriteLine("Invalid operation.");
                 Console.WriteLine($"Try again.");
             }
             else
             {
-                BankTransfer bankTransfer = bankService.TransferToAccount(storedAccount.AccountNumber, recepientAccount, amount);
+                BankTransfer bankTransfer = bankService.TransferToAccount(senderAccount, recipientAccount, amount);
                 DisplayBankTransferDetails(bankTransfer);
             }
             LoggedUserMenu.Run();
@@ -153,7 +163,7 @@ namespace BankApp.ConsoleUI
         static public void WithdrawFromATM()
         {
 
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("how much would you like to withdraw? (decimal)? To escape press esc on your keyboard");
             var amount = Utils.ReadDec();
 
@@ -178,7 +188,7 @@ namespace BankApp.ConsoleUI
 
         static void ReportAccountDetails(long loggedUserAccountNum)
         {
-            Account storedAccount = bankService.FindAccount(loggedUserAccountNum);
+            Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine($"Account no: {storedAccount.AccountNumber}.");
             Console.WriteLine($"Customer: {storedAccount.UserName} {storedAccount.UserSurname}.");
             Console.WriteLine($"Account currency: {storedAccount.AccountCurrency}.");
@@ -189,9 +199,10 @@ namespace BankApp.ConsoleUI
         {
             Console.WriteLine("Provide account number:");
             long accountNum = Utils.ReadLong();
+            Account account = null;
+            bankService.LogUserIntoAccount(accountNum, out account);
 
-            Account account;
-            if (!bankService.LogUserIntoAccount(accountNum, out account))
+            if (account == null)
             {
                 Console.WriteLine("The login attempt failed. The user with this account number does not exist.");
                 MainMenu.Run();
@@ -206,6 +217,7 @@ namespace BankApp.ConsoleUI
 
         static void Exit()
         {
+
         }
 
         static Currency ReadCurrencyOption()
@@ -240,14 +252,16 @@ namespace BankApp.ConsoleUI
             Currency currency = ReadCurrencyOption();
 
             long newAccountNum = bankService.CreateAccount(firstName, lastName, currency, balance);
-            Account storedAccount = bankService.FindAccount(newAccountNum);
+            Account storedAccount = bankService.GetAccount(newAccountNum);
             ReportAccountDetails(storedAccount.AccountNumber);//take argument??
             MainMenu.Run();
         }
 
         static void LogOut()
         {
-            bankService.LogUserOutFromAccount(loggedUserAccountNum);
+            Account account;
+            bankService.LogUserOutFromAccount(loggedUserAccountNum, out account);
+            Console.WriteLine($"Ravendb account, {account.AccountNumber}, {account.Id}, {account.UserName}, logged in:{account.IsLoggedIn}");
             Console.WriteLine("User successfully logged out.");
             MainMenu.Run();
         }
@@ -296,13 +310,13 @@ namespace BankApp.ConsoleUI
     }
 
     static class Utils
-    {
+    {//tofix
         public static long ReadLong()
         {
             long value;
 
-            while (!long.TryParse(Console.ReadLine(), out value))
-                Console.WriteLine("Invalid input format");
+            while (!long.TryParse(Console.ReadLine(), out value) || value < 0)
+                Console.WriteLine("Invalid input format. Please provide a long.");
 
             return value;
         }
@@ -311,24 +325,22 @@ namespace BankApp.ConsoleUI
         {
             int value;
 
-            while (!int.TryParse(Console.ReadLine(), out value))
-                Console.WriteLine("Invalid input format");
+            while (!int.TryParse(Console.ReadLine(), out value) || value < 0)
+                Console.WriteLine("Invalid input format. Please provide an int.");
 
             return value;
         }
+
 
         public static decimal ReadDec()
         {
             decimal value;
 
-            while (!decimal.TryParse(Console.ReadLine(), out value))
-                Console.WriteLine("Invalid input format");
+            while (!decimal.TryParse(Console.ReadLine(), out value) || value < 0)
+                Console.WriteLine("Invalid input format. Please provide a decimal");
 
             return value;
         }
-
-
-
 
 
         public static bool IsPositive(decimal amount)
