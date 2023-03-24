@@ -23,15 +23,16 @@ namespace ATM_excercise
 
         public BankTransferType BankTransferType { get; set; }
 
-        //public Currency OriginalCurrency { get; set; }
+        public Currency OriginalCurrency { get; set; }
 
         public override BankingOperationType BankingOperationType => BankingOperationType.BankTransfer;
 
-        public BankTransfer (long senderAccount, long recipientAccount, BankTransferType transferType, decimal amount, Currency currencyOption) : base(amount, currencyOption)
+        public BankTransfer (long senderAccount, long recipientAccount, BankTransferType transferType, Currency originalCurrency, decimal amount, Currency currency) : base(amount, currency)
         {
             SenderAccount = senderAccount;
             RecipientAccount = recipientAccount;
             BankTransferType = transferType;
+            OriginalCurrency = originalCurrency;
         }
     }
 }

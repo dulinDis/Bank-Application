@@ -1,4 +1,5 @@
 ﻿using ATM_excercise.Raven;
+using Newtonsoft.Json.Linq;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections;
@@ -164,7 +165,7 @@ namespace ATM_excercise
             return null;
         }
 
-        public decimal UpdateBalance(long accountNum, decimal newTransactionAmount)
+        public decimal UpdateBalance(long accountNum, decimal newTransactionAmount) //TOFIX- doesnt update balance after tranfer correctly
         {
             Account currentAccount = GetAccount(accountNum);
 
@@ -359,32 +360,24 @@ namespace ATM_excercise
         public BankTransfer TransferToAccount(Account senderAccount, Account recipientAccount, decimal amount)
 
         {
+            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, senderAccount.AccountCurrency, amount * (-1), senderAccount.AccountCurrency);
+           
+            decimal incommingConvertedAmount = Math.Round(CurrencyConverter.ConvertBetweenCurrencies(amount, senderAccount.AccountCurrency, recipientAccount.AccountCurrency), 3);
 
-            // BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), senderAccount.AccountCurrency);
-            //UpdateBalance(senderAccount.AccountNumber, (-1) * amount);
-            //AddTransactionToTransactionHistory(senderAccount.AccountNumber, transactionOutgoing);
+           
 
-            //senderAccount.UpdateBalance((-1) * amount);
-            //senderAccount.AddTransactionToTransactionHistory(transactionOutgoing);
-            ////OFIX: transacttion incoming doesnt behave i should - group them ogether in one session- anoher method.
-            // BankTransfer transacionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, senderAccount.AccountCurrency);
-            //recipientAccount.UpdateBalance(amount);
-            //recipientAccount.AddTransactionToTransactionHistory(transacionIncoming);
+            BankTransfer transactionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber,BankTransferType.Incoming, senderAccount.AccountCurrency, incommingConvertedAmount, recipientAccount.AccountCurrency );
 
-            //return transactionOutgoing;
-
-            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), senderAccount.AccountCurrency);
-            BankTransfer transacionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, amount, senderAccount.AccountCurrency);
             using (var session = DocumentStoreHolder.Store.OpenSession())
             {
                 Account ravenSenderAccount = session.Query<Account>().Where(account => account.AccountNumber == senderAccount.AccountNumber).ToList()[0];
                 Account ravenRecipientAccount = session.Query<Account>().Where(account => account.AccountNumber == recipientAccount.AccountNumber).ToList()[0];
 
                 ravenSenderAccount.Balance -= amount;
-                ravenRecipientAccount.Balance += amount;
+                ravenRecipientAccount.Balance += incommingConvertedAmount;
 
                 ravenSenderAccount.TransactionHistory.Add(transactionOutgoing);
-                ravenRecipientAccount.TransactionHistory.Add(transacionIncoming);
+                ravenRecipientAccount.TransactionHistory.Add(transactionIncoming);
 
 
                 session.SaveChanges();

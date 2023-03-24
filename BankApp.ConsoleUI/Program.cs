@@ -49,11 +49,6 @@ namespace BankApp.ConsoleUI
 
         static void Main(string[] args)
         {
-
-            decimal result = CurrencyConverter.ConvertBetweenCurrencies(100.001m, Currency.EUR, Currency.PLN);
-            Console.WriteLine(result);
-
-
             Console.WriteLine("Hello stranger!");
             MainMenu.Run();
         }
