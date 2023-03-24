@@ -8,16 +8,18 @@ namespace BankApp.ConsoleUI
 
     internal class Program
     {
+  
         static Menu MainMenu = new Menu()
         {
-            //hierarchiczne menu?
-            //class SubmenuItem : MenuItem?
-            //class ActionItem : MenuItem?
-            //w sumie może mogłoby by być submenu i action w ramach jednej klasy bez subklas
-            //a może MenuItemAction = () => { subMenuAction.RunMenu() } ?
-            //może każde menu powinno dziedziczyć z bazowego Menu żeby podzielić UI na klasy?
+      
+        //hierarchiczne menu?
+        //class SubmenuItem : MenuItem?
+        //class ActionItem : MenuItem?
+        //w sumie może mogłoby by być submenu i action w ramach jednej klasy bez subklas
+        //a może MenuItemAction = () => { subMenuAction.RunMenu() } ?
+        //może każde menu powinno dziedziczyć z bazowego Menu żeby podzielić UI na klasy?
 
-            Items =
+        Items =
             {
                 new MenuItem("Create account", CreateAccount),
                 new MenuItem("Login", LogIn),
@@ -38,12 +40,20 @@ namespace BankApp.ConsoleUI
             }
         };
 
+
+
+
         static BankService bankService = new BankService();
         static long loggedUserAccountNum = 0; //use Account instead of long here
 
 
         static void Main(string[] args)
         {
+
+            decimal result = CurrencyConverter.ConvertBetweenCurrencies(100.001m, Currency.EUR, Currency.PLN);
+            Console.WriteLine(result);
+
+
             Console.WriteLine("Hello stranger!");
             MainMenu.Run();
         }

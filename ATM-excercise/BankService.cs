@@ -394,6 +394,10 @@ namespace ATM_excercise
         }
 
 
+        //public currencyConverter(decimal amountTransfered, Currency senderCurrency, Currency recipientCurrency)
+        //{
+
+        //}
         #endregion
 
     }
