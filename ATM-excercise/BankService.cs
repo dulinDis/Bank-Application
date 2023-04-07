@@ -197,117 +197,6 @@ namespace ATM_excercise
 
         }
 
-
-        //public bool CheckIfAccountExists(long accountNum)
-        //{
-        //    // return _accounts.ContainsKey(accountNum) ? true : false;
-        //    return GetAccount(accountNum) == null ? false : true;
-        //}
-
-
-
-        //TODO: changing login o use DB
-        //public bool LogUserIntoAccount(long accountNum, out Account account)
-        //{
-        //    Account dbAccount = GetAccount(accountNum);
-        //    Console.WriteLine($"Ravendb account, {dbAccount.AccountNumber}, {dbAccount.Id}, {dbAccount.UserName}");
-
-        //    if (dbAccount == null)
-        //    {
-        //        account = null;
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //            //ToggleAccounLogin(accountNum);
-        //            account = dbAccount;
-        //            account.IsLoggedIn = true;
-        //            return true;
-        //    }
-        //}
-
-
-
-        //public bool LogUserIntoAccount(long accountNum, out Account account)
-        //{
-
-        //    if (!CheckIfAccountExists(accountNum))
-        //    {
-        //        account = null;
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        account = FindAccount(accountNum);
-        //        account.IsLoggedIn = true;
-        //        return true;
-        //    }
-        //}
-
-        //public bool LogUserOutFromAccount(long accountNum)
-        //{
-        //    if (!CheckIfAccountExists(accountNum))
-        //    {
-        //        return false;
-        //    }
-        //    else
-        //    {
-        //        _accounts[accountNum].IsLoggedIn = false;
-        //        return true;
-        //    }
-        //}
-
-        //public bool CheckIsUserLoggedInAccount(long accountNum)
-        //{
-        //    if (_accounts.ContainsKey(accountNum))
-        //    {
-        //        return _accounts[accountNum].IsLoggedIn ? true : false;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        //public void LoggedUserActions(long accountNum, AccountActions action)
-        //{
-        //    Account userAccount = FindAccount(accountNum);
-
-        //    switch (action)
-        //    {
-        //        case AccountActions.CheckBalance:
-        //            //CheckBalance(userAccount);
-        //            // here provide function from user interface
-        //            //userAccount.RetrieveBalance();
-        //            break;
-
-        //        case AccountActions.TransactionHistory:
-        //           //userAccount.RetrieveTransactionHistory();
-        //            break;
-
-        //        case AccountActions.WithdrawATM:
-        //          //  userAccount.WithdrawFromATM(accountNum);
-        //            break;
-
-        //        case AccountActions.DepositATM:
-        //            userAccount.DepositToATM(accountNum);
-        //            break;
-
-        //        case AccountActions.SendMoney:
-        //          //  Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
-        //          //  long.TryParse(Console.ReadLine(), out long recipientAccountNumber);
-        //          //  Account recepientAccount = FindAccount(recipientAccountNumber);
-        //          //  userAccount.TransferToAccount(recepientAccount);
-
-        //          // here provide function from user interface
-        //            break;
-
-        //        default:
-        //            Console.WriteLine("Error");
-        //            break;
-        //    }
-        //}
-
         #endregion
 
         #region account transactions
@@ -360,12 +249,8 @@ namespace ATM_excercise
         public BankTransfer TransferToAccount(Account senderAccount, Account recipientAccount, decimal amount)
 
         {
-            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, senderAccount.AccountCurrency, amount * (-1), senderAccount.AccountCurrency);
-           
+            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, senderAccount.AccountCurrency, amount * (-1), senderAccount.AccountCurrency);         
             decimal incommingConvertedAmount = Math.Round(CurrencyConverter.ConvertBetweenCurrencies(amount, senderAccount.AccountCurrency, recipientAccount.AccountCurrency), 3);
-
-           
-
             BankTransfer transactionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber,BankTransferType.Incoming, senderAccount.AccountCurrency, incommingConvertedAmount, recipientAccount.AccountCurrency );
 
             using (var session = DocumentStoreHolder.Store.OpenSession())
@@ -379,18 +264,10 @@ namespace ATM_excercise
                 ravenSenderAccount.TransactionHistory.Add(transactionOutgoing);
                 ravenRecipientAccount.TransactionHistory.Add(transactionIncoming);
 
-
                 session.SaveChanges();
-
             }
             return transactionOutgoing;
         }
-
-
-        //public currencyConverter(decimal amountTransfered, Currency senderCurrency, Currency recipientCurrency)
-        //{
-
-        //}
         #endregion
 
     }

@@ -205,17 +205,29 @@ namespace BankApp.ConsoleUI
             Account account = null;
             bankService.LogUserIntoAccount(accountNum, out account);
 
-            if (account == null)
-            {
-                Console.WriteLine("The login attempt failed. The user with this account number does not exist.");
-                MainMenu.Run();
-            }
-            else
+
+            if (account is not null)
             {
                 loggedUserAccountNum = accountNum;
                 Console.WriteLine($"The login attempt successful. Welcome {account.UserName} {account.UserSurname}.");
                 LoggedUserMenu.Run();
             }
+            else
+            {
+                Console.WriteLine("The login attempt failed. The user with this account number does not exist.");
+                MainMenu.Run();
+            }
+            //if (account == null)
+            //{
+            //    Console.WriteLine("The login attempt failed. The user with this account number does not exist.");
+            //    MainMenu.Run();
+            //}
+            //else
+            //{
+            //    loggedUserAccountNum = accountNum;
+            //    Console.WriteLine($"The login attempt successful. Welcome {account.UserName} {account.UserSurname}.");
+            //    LoggedUserMenu.Run();
+            //}
         }
 
         static void Exit()

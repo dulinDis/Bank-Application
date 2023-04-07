@@ -48,32 +48,4 @@ namespace ATM_excercise.Raven
 
 
 
-    //public static class DocumentStoreHolder
-    //{
-    //    //a class which represents database itself
-
-    //    private static readonly Lazy<IDocumentStore> LazyStore =
-    //        new Lazy<IDocumentStore>(() =>
-    //        {
-    //            IDocumentStore store = new DocumentStore
-    //            {
-    //                //this is array because if we use cluster we can lis several urls
-    //                Urls = new[] { "http://127.0.0.1:8080/" },
-    //                Database = "bank",
-    //            };
-    //            store.Initialize();
-    //            return store;
-    //        });
-
-
-
-    //    //signleon on document store -if we use dependency invejction i should use life cycle og signleon object | simulaing singleon apterin a hrea safe manner
-    //    public static IDocumentStore Store => LazyStore.Value;
-
-    //}
-
-
-
-
-
 }
