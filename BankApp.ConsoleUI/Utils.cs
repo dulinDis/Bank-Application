@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ATM_excercise
+﻿namespace BankApp.ConsoleUI
 {
-    public static class Utils
-    {//tofix
-        public static long ParseOrGetDefault(string input)
+    static class Utils
+    {
+        public static long ReadLong()
         {
-            long.TryParse(input, out long value); 
+            long value;
+
+            while (!long.TryParse(Console.ReadLine(), out value) || value < 0)
+                Console.WriteLine("Invalid input format. Please provide a long.");
+
             return value;
         }
 
@@ -24,7 +22,7 @@ namespace ATM_excercise
             return value;
         }
 
-        public static decimal ReadDec()
+        public static decimal ReadDecimal()
         {
             decimal value;
 
@@ -39,4 +37,7 @@ namespace ATM_excercise
             return amount >= 0;
         }
     }
+
+
+
 }

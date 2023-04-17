@@ -14,70 +14,95 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using static Raven.Client.Documents.Smuggler.SmugglerProgressBase;
+using static ATM_excercise.Utils;
 
 namespace ATM_excercise
 {
+    // TODO:  multicurrrency account option
     public enum Currency
     {
         USD,
         EUR,
         PLN
-    }// the multiaccount option yet not implemented
-
-    public enum AccountActions
-    {
-        CheckBalance,
-        TransactionHistory,
-        WithdrawATM,
-        DepositATM,
-        SendMoney
     }
+    //public enum AccountActions
+    //{
+    //    CheckBalance,
+    //    TransactionHistory,
+    //    WithdrawATM,
+    //    DepositATM,
+    //    SendMoney
+    //}
 
+    /// <summary>
+    /// Possible banking operation types.
+    /// </summary>
     public enum BankingOperationType
     {
         ATMTransaction,
         BankTransfer,
         BankDeposit
     }
-
     public class BankService
     {
-        private Dictionary<long, Account> _accounts = new Dictionary<long, Account>();
+        #region Account Creation
 
-        //private long accountsCreatedUntilNow = 0;
-        #region account creation
-
+        /// <summary>
+        /// Creates new user account in the database.
+        /// </summary>
+        /// <param name="name">First name.</param>
+        /// <param name="surname">Last name.</param>
+        /// <param name="currency">Account Currency.</param>
+        /// <returns></returns>
         public long CreateAccount(string name, string surname, Currency currency)
         {
             return CreateAccount(name, surname, currency, 0);
         }
-
+        /// <summary>
+        /// Creates new user account in the database.
+        /// </summary>
+        /// <param name="name">First name.</param>
+        /// <param name="surname">Last name.</param>
+        /// <param name="currency">Account Currency.</param>
+        /// <param name="initialBalance">Initial balance.</param>
+        /// <returns>Newly created account number.</returns>
         public long CreateAccount(string name, string surname, Currency currency, decimal initialBalance)
         {
-            try
+            //if (surname == "Złodziej")
+            //    throw new CannotCreateAccountException();
+
+            long accountNum = GenerateNextAccountNumber();
+            Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
+
+            if (initialBalance > 0)
             {
-                long accountNum = GenerateNextAccountNumber();
-                Account newAccount = new Account(accountNum, name, surname, currency, initialBalance);
-
-                if (initialBalance > 0)
-                {
-                    BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
-                    newAccount.TransactionHistory.Add(initialDeposit);
-                }
-
-                using (var session = DocumentStoreHolder.Store.OpenSession())
-                {
-                    session.Store(newAccount);
-                    session.SaveChanges();
-                }
-                return accountNum;
+                BankDeposit initialDeposit = new BankDeposit(accountNum, initialBalance, currency);
+                newAccount.TransactionHistory.Add(initialDeposit);
             }
-            catch (Exception ex)
-            { 
-                throw new Exception("Couldn't create new account", ex);
+
+            using (var session = DocumentStoreHolder.Store.OpenSession())
+            {
+                session.Store(newAccount);
+                session.SaveChanges();
             }
+
+            return accountNum;
         }
 
+        //public class CannotCreateAccountException : Exception
+        //{
+        //    public CannotCreateAccountReason Reason { get; set; }
+        //}
+
+        public enum CannotCreateAccountReason
+        {
+            CustomerIsNotCitizen,
+            CustomerIsAConvict
+        }
+        /// <summary>
+        /// Generates account number for a new account.
+        /// </summary>
+        /// <returns>Unique account number that doesn't appear in the database.</returns>
         private long GenerateNextAccountNumber()
         {
             try
@@ -87,7 +112,7 @@ namespace ATM_excercise
                 do
                 {
                     Random generator = new Random();
-                    long.TryParse(generator.Next(0, 999999).ToString("D3"), out randomlyGeneratedAccountNumber); //somethign cn go wrong
+                    long.TryParse(generator.Next(0, 999999).ToString("D3"), out randomlyGeneratedAccountNumber);
                     Account existingAccount = GetAccount(randomlyGeneratedAccountNumber);
                     isUniqueAccountNumber = (existingAccount == null) ? true : false;
                 } while (isUniqueAccountNumber == false);
@@ -98,13 +123,16 @@ namespace ATM_excercise
             {
                 throw ex;
             }
-
         }
-
         #endregion
 
-        #region account actions
-
+        #region Account Actions
+        /// <summary>
+        /// Logs the user into the account.
+        /// </summary>
+        /// <param name="accountNum">Account to perform login on</param>
+        /// <param name="updatedAccount">Account object.</param>
+        /// <returns>Bool if action successful.</returns>
         public bool LogUserIntoAccount(long accountNum, out Account updatedAccount)
         {
 
@@ -127,7 +155,12 @@ namespace ATM_excercise
                 return false;
             }
         }
-
+        /// <summary>
+        /// Logs the user out from the account.
+        /// </summary>
+        /// <param name="accountNum">Account to perform logout on</param>
+        /// <param name="updatedAccount">Account object.</param>
+        /// <returns>Bool if action successful.</returns>
         public bool LogUserOutFromAccount(long accountNum, out Account updatedAccount)
         {
             Account currentAccount = GetAccount(accountNum);
@@ -149,6 +182,11 @@ namespace ATM_excercise
             }
         }
 
+        /// <summary>
+        /// Returns from database searched account.
+        /// </summary>
+        /// <param name="accountNum">Searched account number.</param>
+        /// <returns>Returns account object.</returns>
         public Account GetAccount(long accountNum)
         {
             List<Account> accounts = new List<Account>();
@@ -164,7 +202,12 @@ namespace ATM_excercise
             }
             return null;
         }
-
+        /// <summary>
+        /// Updates the account balance
+        /// </summary>
+        /// <param name="accountNum">Account which balance is updated.</param>
+        /// <param name="newTransactionAmount">The value of transaction that affected balance.</param>
+        /// <returns>Returns updated balance.</returns>
         public decimal UpdateBalance(long accountNum, decimal newTransactionAmount) //TOFIX- doesnt update balance after tranfer correctly
         {
             Account currentAccount = GetAccount(accountNum);
@@ -184,7 +227,12 @@ namespace ATM_excercise
                 return currentAccount.Balance;
             }
         }
-
+        /// <summary>
+        /// Adds transaction performed on the account to its transaction history.
+        /// </summary>
+        /// <param name="accountNum">Account on which the transaction took place.</param>
+        /// <param name="transaction">Performed transaction.</param>
+        /// <returns>Returns transaction object.</returns>
         public Transaction AddTransactionToTransactionHistory(long accountNum, Transaction transaction)
         {
             using (var session = DocumentStoreHolder.Store.OpenSession())
@@ -196,10 +244,15 @@ namespace ATM_excercise
             return transaction;
 
         }
-
         #endregion
 
-        #region account transactions
+        #region Account Transactions.
+        /// <summary>
+        /// Deposits funds on the account.
+        /// </summary>
+        /// <param name="accountNum">Account that gets funds.</param>
+        /// <param name="amount">Amount to be deposited.</param>
+        /// <returns>Returns transaction object.</returns>
         public ATMTransaction DepositToATM(long accountNum, decimal amount)
         {
             Account userAccount = GetAccount(accountNum);
@@ -210,7 +263,12 @@ namespace ATM_excercise
             //userAccount.AddTransactionToTransactionHistory(transaction);
             return transaction;
         }
-
+        /// <summary>
+        /// Withdraws funds from the account.
+        /// </summary>
+        /// <param name="accountNum">Debited account number.</param>
+        /// <param name="amount">Amount to be withdrawn.</param>
+        /// <returns>Returns transaction object.</returns>
         public ATMTransaction WithdrawFromATM(long accountNum, decimal amount)
         {
             Account userAccount = GetAccount(accountNum);
@@ -221,37 +279,18 @@ namespace ATM_excercise
             //userAccount.AddTransactionToTransactionHistory(transaction);
             return transaction;
         }
-
-        //public BankTransfer TransferToAccount(long senderAccountNumber, long recipientAccountNumber, decimal amount)
-
-        //{
-        //    Account senderAccount = GetAccount(senderAccountNumber);
-        //    Account recipientAccount = GetAccount(recipientAccountNumber);
-
-
-
-
-
-        //    BankTransfer transactionOutgoing = new BankTransfer(senderAccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, amount * (-1), senderAccount.AccountCurrency);
-        //    UpdateBalance(senderAccountNumber, (-1) * amount);
-        //    AddTransactionToTransactionHistory(senderAccountNumber, transactionOutgoing);
-
-        //    senderAccount.UpdateBalance((-1) * amount);
-        //    senderAccount.AddTransactionToTransactionHistory(transactionOutgoing);
-        //    //OFIX: transacttion incoming doesnt behave i should - group them ogether in one session- anoher method.
-        //    BankTransfer transacionIncoming = new BankTransfer(senderAccountNumber, recipientAccountNumber, BankTransferType.Incoming, amount, senderAccount.AccountCurrency);
-        //    recipientAccount.UpdateBalance(amount);
-        //    recipientAccount.AddTransactionToTransactionHistory(transacionIncoming);
-
-        //    return transactionOutgoing;
-        //}
-
+        /// <summary>
+        /// Transfers funds from one account to another one.
+        /// </summary>
+        /// <param name="senderAccount">Sender Account</param>
+        /// <param name="recipientAccount">Recipient Account</param>
+        /// <param name="amount">Amount to be transferred between accounts.</param>
+        /// <returns>Returns outgoing transaction object.</returns>
         public BankTransfer TransferToAccount(Account senderAccount, Account recipientAccount, decimal amount)
-
         {
-            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, senderAccount.AccountCurrency, amount * (-1), senderAccount.AccountCurrency);         
+            BankTransfer transactionOutgoing = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Outgoing, senderAccount.AccountCurrency, amount * (-1), senderAccount.AccountCurrency);
             decimal incommingConvertedAmount = Math.Round(CurrencyConverter.ConvertBetweenCurrencies(amount, senderAccount.AccountCurrency, recipientAccount.AccountCurrency), 3);
-            BankTransfer transactionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber,BankTransferType.Incoming, senderAccount.AccountCurrency, incommingConvertedAmount, recipientAccount.AccountCurrency );
+            BankTransfer transactionIncoming = new BankTransfer(senderAccount.AccountNumber, recipientAccount.AccountNumber, BankTransferType.Incoming, senderAccount.AccountCurrency, incommingConvertedAmount, recipientAccount.AccountCurrency);
 
             using (var session = DocumentStoreHolder.Store.OpenSession())
             {

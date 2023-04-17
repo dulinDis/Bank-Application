@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ATM_excercise.Raven
 {
-
+    //add somehow ensure that database exists
     public static class DocumentStoreHolder
     {
         // Use Lazy<IDocumentStore> to initialize the document store lazily. 
@@ -33,7 +33,7 @@ namespace ATM_excercise.Raven
             },
 
                 // Define a default database (optional)
-                Database = "bank",
+                Database = "BankingApp",
 
                 // Define a client certificate (optional)
                 //Certificate = new X509Certificate2("C:\\path_to_your_pfx_file\\cert.pfx"),

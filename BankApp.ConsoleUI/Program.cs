@@ -5,21 +5,20 @@ using ATM_excercise;
 
 namespace BankApp.ConsoleUI
 {
-
     internal class Program
     {
   
         static Menu MainMenu = new Menu()
         {
       
-        //hierarchiczne menu?
-        //class SubmenuItem : MenuItem?
-        //class ActionItem : MenuItem?
-        //w sumie może mogłoby by być submenu i action w ramach jednej klasy bez subklas
-        //a może MenuItemAction = () => { subMenuAction.RunMenu() } ?
-        //może każde menu powinno dziedziczyć z bazowego Menu żeby podzielić UI na klasy?
+            //hierarchiczne menu?
+            //class SubmenuItem : MenuItem?
+            //class ActionItem : MenuItem?
+            //w sumie może mogłoby by być submenu i action w ramach jednej klasy bez subklas
+            //a może MenuItemAction = () => { subMenuAction.RunMenu() } ?
+            //może każde menu powinno dziedziczyć z bazowego Menu żeby podzielić UI na klasy?
 
-        Items =
+            Items =
             {
                 new MenuItem("Create account", CreateAccount),
                 new MenuItem("Login", LogIn),
@@ -40,12 +39,8 @@ namespace BankApp.ConsoleUI
             }
         };
 
-
-
-
         static BankService bankService = new BankService();
         static long loggedUserAccountNum = 0; //use Account instead of long here
-
 
         static void Main(string[] args)
         {
@@ -104,7 +99,7 @@ namespace BankApp.ConsoleUI
         {
             Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("How much would you like deposit (decimal)?");
-            var amount = Utils.ReadDec();
+            var amount = Utils.ReadDecimal();
 
             if (Utils.IsPositive(amount))
             {
@@ -126,7 +121,7 @@ namespace BankApp.ConsoleUI
             Account senderAccount = bankService.GetAccount(loggedUserAccountNum);
 
             Console.WriteLine("How much would you like to send (decimal)?");
-            var amount = Utils.ReadDec();
+            var amount = Utils.ReadDecimal();
 
             Console.WriteLine("What is the recipient you would like to send to? Provide account number (long)");
             long recipientAccountNumber = Utils.ReadLong();
@@ -168,7 +163,7 @@ namespace BankApp.ConsoleUI
 
             Account storedAccount = bankService.GetAccount(loggedUserAccountNum);
             Console.WriteLine("how much would you like to withdraw? (decimal)? To escape press esc on your keyboard");
-            var amount = Utils.ReadDec();
+            var amount = Utils.ReadDecimal();
 
             if (!Utils.IsPositive(amount) || amount >= storedAccount.Balance)
             {
@@ -263,12 +258,22 @@ namespace BankApp.ConsoleUI
             Console.WriteLine("Surname:");
             string lastName = Console.ReadLine().Trim();
             Console.WriteLine("Inital deposit (decimal):");
-            decimal balance = Utils.ReadDec();
+            decimal balance = Utils.ReadDecimal();
             Currency currency = ReadCurrencyOption();
 
-            long newAccountNum = bankService.CreateAccount(firstName, lastName, currency, balance);
+            long newAccountNum = 0;
+            try
+            {
+                newAccountNum = bankService.CreateAccount(firstName, lastName, currency, balance);
+            }
+            catch (BankService.CannotCreateAccountException ex) 
+            {
+                Console.WriteLine(ex.Reason);
+                MainMenu.Run();
+            }
+
             Account storedAccount = bankService.GetAccount(newAccountNum);
-            ReportAccountDetails(storedAccount.AccountNumber);//take argument??
+            ReportAccountDetails(storedAccount.AccountNumber);
             MainMenu.Run();
         }
 
@@ -281,104 +286,4 @@ namespace BankApp.ConsoleUI
             MainMenu.Run();
         }
     }
-
-    class Menu
-    {
-        public Menu()
-        {
-            Items = new List<MenuItem>();
-        }
-
-        public List<MenuItem> Items { get; }
-
-        public void Run()
-        {
-            DisplayMenuItems();
-            var chosenMenuItem = ReadUserChoice();
-            chosenMenuItem.MenuItemAction();
-        }
-
-        public void DisplayMenuItems()
-        {
-            for (int i = 0; i < Items.Count; i++)
-            {
-                Console.WriteLine($"{(i + 1).ToString()}. {Items[i].Description}");
-            }
-        }
-
-        public MenuItem ReadUserChoice()
-        {
-            while (true)
-            {
-                Console.Write("Please provide a number corresponding to menu item you want to choose: ");
-                var choice = Utils.ReadInt();
-
-                if (choice < 1 || choice > Items.Count)
-                {
-                    Console.WriteLine("Invalid number - out of menu range");
-                    continue;
-                }
-
-                return Items[choice - 1];
-            }
-        }
-    }
-
-    static class Utils
-    {//tofix
-        public static long ReadLong()
-        {
-            long value;
-
-            while (!long.TryParse(Console.ReadLine(), out value) || value < 0)
-                Console.WriteLine("Invalid input format. Please provide a long.");
-
-            return value;
-        }
-
-        public static int ReadInt()
-        {
-            int value;
-
-            while (!int.TryParse(Console.ReadLine(), out value) || value < 0)
-                Console.WriteLine("Invalid input format. Please provide an int.");
-
-            return value;
-        }
-
-
-        public static decimal ReadDec()
-        {
-            decimal value;
-
-            while (!decimal.TryParse(Console.ReadLine(), out value) || value < 0)
-                Console.WriteLine("Invalid input format. Please provide a decimal");
-
-            return value;
-        }
-
-
-        public static bool IsPositive(decimal amount)
-        {
-            return amount >= 0;
-        }
-    }
-
-    delegate void MenuItemAction();
-
-    class MenuItem
-    {
-        public MenuItem(string description, MenuItemAction menuItemAction)
-        {
-            Description = description;
-            MenuItemAction = menuItemAction;
-        }
-
-        public string Description { get; }
-        public MenuItemAction MenuItemAction { get; }
-
-    }
-
-
-
 }
